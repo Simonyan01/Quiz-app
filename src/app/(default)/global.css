@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+.btn-grad {
+  transition: 0.4s;
+  background-image: linear-gradient(to right, #f93b15 0%, #f09819 50%, #f93b15 100%);
+  background-size: 200% auto;
+}
+
+.btn-grad:hover {
+  background-position: right center;
+}
+
+@theme {
+  --animate-bounce: bounce 1.2s ease-in-out infinite;
+}
