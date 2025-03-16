@@ -1,29 +1,37 @@
-"use client"
+// "use client"
 
-import { createContext, FC, ReactNode, useEffect, useState } from "react"
-import { IUser } from "../lib/types"
-import axios from "axios"
+// import { createContext, ReactNode, useState } from "react"
+// import { IUser } from "../lib/types"
+// import axios from "axios"
 
-interface AuthContextType {
-    user: IUser | null
-    setUser: (user: IUser | null) => void
-}
+// interface IProps {
+//     children: ReactNode
+// }
 
-export const AuthContext = createContext<AuthContextType | null>(null)
+// interface AuthContextType {
+//     user: IUser | null
+//     setUser: (user: IUser | null) => void
+//     fetchUser: () => Promise<void>
+// }
 
-export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<IUser | null>(null)
+// export const AuthContext = createContext<AuthContextType | null>(null)
 
-    useEffect(() => {
-        axios.get("/api/auth")
-            .then(res => setUser(res.data))
-            .catch(() => setUser(null))
-    }, [])
+// export const AuthProvider = ({ children }: IProps) => {
+//     const [user, setUser] = useState<IUser | null>(null)
 
-    return (
-        <AuthContext.Provider value={{ user, setUser }}>
-            {children}
-        </AuthContext.Provider>
-    )
+//     const fetchUser = async () => {
+//         try {
+//             const res = await axios.get("/api/auth")
+//             setUser(res.data)
+//         } catch {
+//             setUser(null)
+//         }
+//     }
 
-}
+//     return (
+//         <AuthContext.Provider value={{ user, setUser, fetchUser }}>
+//             {children}
+//         </AuthContext.Provider>
+//     )
+
+// }

@@ -1,5 +1,5 @@
 interface ErrorMessageProps {
-    message?: string
+    message: string | boolean | null
 }
 
 export default function ErrorMessage({ message }: ErrorMessageProps) {

@@ -13,7 +13,7 @@ export default function InputField({ label, type = "text", placeholder, register
             <input
                 type={type}
                 {...register}
-                className="w-full p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="w-full p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
                 placeholder={placeholder}
             />
             {error && <p className="text-red-400 pt-1">{error}</p>}

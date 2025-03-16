@@ -1,57 +1,49 @@
 "use client"
 
+import { useHttpMutation } from "@/_helpers/hooks/useHttp"
 import { SubmitHandler, useForm } from "react-hook-form"
+import { IUser, METHODS } from "@/_helpers/lib/types"
 import ErrorMessage from "@/_components/ErrorMessage"
 import InputField from "@/_components/InputField"
-import { IUser } from "@/_helpers/lib/types"
 import { useRouter } from "next/navigation"
-import axios, { AxiosError } from "axios"
 import Loader from "@/_components/Loader"
-import { useState } from "react"
 import Link from "next/link"
 import "../global.css"
 
-export default function LoginForm() {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<IUser>()
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState("")
+export default function LogInForm() {
     const router = useRouter()
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<IUser>()
 
-    const handleSignIn: SubmitHandler<IUser> = async (data) => {
-        setIsLoading(true)
+    const [logIn, error, loading] = useHttpMutation<null, IUser>((data) => {
+        const { role } = data.found
 
-        try {
-            await axios.post("/login/api", data)
-            !error && router.push("/user")
-            setError("")
-            reset()
-        } catch (err) {
-            const errRes = err as AxiosError
-            const res = errRes.response?.data as { message: string }
-            setError(res?.message)
-            setTimeout(() => setError(""), 5000)
-        } finally {
-            setIsLoading(false)
-        }
+        role === "admin" && router.push("/admin")
+        router.push("/user")
+        reset()
+    })
+
+    const handleLogIn: SubmitHandler<IUser> = (data) => {
+        logIn("/login/api", METHODS.POST, data)
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900">
-            <Loader isLoading={isLoading} />
-            <div className="bg-gray-800 p-7 rounded-2xl shadow-lg w-96 border border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-100 mb-6 text-center tracking-wider">Մուտք</h2>
-                <form onSubmit={handleSubmit(handleSignIn)}>
-                    <ErrorMessage message={error} />
+        <section className="min-h-screen flex items-center justify-center bg-gray-900">
+            <Loader isLoading={loading} />
+            <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
+                <img src="/light-bulb.png" alt="Quiz Icon" className="mx-auto pb-4" draggable={false} />
+
+                <form onSubmit={handleSubmit(handleLogIn)}>
+                    {error && <ErrorMessage message={error} />}
                     <InputField
-                        label="Մուտքանուն"
-                        placeholder="Մուտքագրեք ձեր մուտքանունը"
+                        label="Username"
+                        placeholder="Enter your username"
                         register={register("login")}
                         error={errors.login?.message}
                     />
                     <InputField
-                        label="Գաղտնաբառ"
+                        label="Password"
                         type="password"
-                        placeholder="Մուտքագրեք գաղտնաբառը"
+                        placeholder="Enter your password"
                         register={register("password")}
                         error={errors.password?.message}
                     />
@@ -59,13 +51,13 @@ export default function LoginForm() {
                         type="submit"
                         className="w-full text-white p-2 btn-grad mt-2 rounded-lg text-xl tracking-wider cursor-pointer"
                     >
-                        {isLoading ? "Մի փոքր սպասեք" : "Մուտք գործել"}
+                        {loading ? "Please wait" : "Log In"}
                     </button>
                 </form>
                 <Link href="/signup" className="font-semibold text-gray-200 flex mt-5 justify-center text-center tracking-wider">
-                    Դեռ չե՞ք գրանցվել
+                    Don't have an account yet?
                 </Link>
             </div>
-        </div>
+        </section>
     )
 }

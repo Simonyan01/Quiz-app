@@ -1,4 +1,4 @@
-import { AuthProvider } from "@/_helpers/context/AuthContext"
+// import { AuthProvider } from "@/_helpers/context/AuthContext"
 import { Geist, Geist_Mono } from "next/font/google"
 import Navbar from "@/_components/Navbar"
 import type { Metadata } from "next"
@@ -24,11 +24,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthProvider>
-          <Navbar />
-          {children}
-        </AuthProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}>
+        {/* <AuthProvider> */}
+        <Navbar />
+        {children}
+        {/* </AuthProvider> */}
       </body>
     </html>
   )

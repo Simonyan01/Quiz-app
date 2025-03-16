@@ -4,7 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress"
 import { Box } from "@mui/material"
 
 interface LoaderProps {
-    isLoading: boolean
+    isLoading: string | boolean | null
 }
 
 export default function Loader({ isLoading }: LoaderProps) {
@@ -21,7 +21,7 @@ export default function Loader({ isLoading }: LoaderProps) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
                 zIndex: 9999,
             }}
         >
@@ -35,9 +35,9 @@ export default function Loader({ isLoading }: LoaderProps) {
                 </defs>
             </svg>
             <CircularProgress
-                size={60}
-                thickness={4}
-                sx={{ 'svg circle': { stroke: 'url(#my_gradient)' }, width: 70, height: 70 }}
+                size={50}
+                thickness={5}
+                sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }}
             />
         </Box>
     )

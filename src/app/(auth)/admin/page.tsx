@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import Loader from "@/_components/Loader"
 import Layout from "@/_components/Layout"
 
-export default function UserPage() {
+export default function AdminPage() {
     const router = useRouter()
     const [logout] = useHttpMutation(() => router.push("/"))
     const { data, loading } = useHttpQuery<IUser>("/api/auth")
@@ -26,7 +26,7 @@ export default function UserPage() {
                 <Loader isLoading={loading} />
                 <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 border border-gray-600">
                     <h2 className="text-2xl font-bold text-indigo-400 mb-4 text-center">
-                        User Dashboard
+                        Admin Dashboard
                     </h2>
                     {!data ? (
                         <p className="text-red-400">Տվյալները հասանելի չեն</p>
@@ -37,13 +37,15 @@ export default function UserPage() {
                             <p><span className="font-semibold">Դեր:</span> {role}</p>
                         </>
                     )}
-                    <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="w-full text-white p-2 cursor-pointer bg-red-600 hover:bg-red-700 mt-4 rounded-lg text-xl tracking-wider"
-                    >
-                        {data && loading ? "Logging out..." : "Logout"}
-                    </button>
+                    {data && (
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="w-full text-white p-2 cursor-pointer bg-red-600 hover:bg-red-700 mt-4 rounded-lg text-xl tracking-wider"
+                        >
+                            {loading ? "Logging out..." : "Logout"}
+                        </button>
+                    )}
                 </div>
             </section>
         </Layout>

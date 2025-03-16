@@ -37,9 +37,10 @@ export const POST = async (req: Request) => {
     }
 
     const hashedPwd = await bcrypt.hash(password, 10)
-    await UserModel.create({ login, password: hashedPwd, ...rest })
+    const newUser = await UserModel.create({ login, password: hashedPwd, ...rest })
+    const { password: _, ...userWithoutPwd } = newUser.toJSON()
 
-    return Response.json({ message: "User successfully created" }, { status: 201 })
+    return Response.json({ message: "User successfully created", user: userWithoutPwd }, { status: 201 })
   } catch {
     return Response.json({ message: "Internal server error" }, { status: 500 })
   }

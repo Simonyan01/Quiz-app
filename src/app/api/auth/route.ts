@@ -1,22 +1,24 @@
 import { UserModel } from "@/_helpers/model/user"
-import { cookies } from "next/headers"
+import { NextRequest } from "next/server"
 import jwt from "jsonwebtoken"
 
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
   try {
-    const token = (await cookies()).get("_token")?.value
+    const token = req.cookies.get("_token")?.value
+
     if (!token) {
       return Response.json({ message: "Unauthorized: No token found" }, { status: 401 })
     }
 
     const key = process.env.JWT_SECRET
+
     if (!key) {
       return Response.json({ message: "Server error: missing secret key" }, { status: 500 })
     }
 
     const decoded = jwt.verify(token, key) as { id: number }
     const user = await UserModel.findByPk(decoded.id, {
-      attributes: { exclude: ["password"] },
+      attributes: ["id", "name", "surname", "role"],
     })
 
     if (!user) {
@@ -24,8 +26,8 @@ export const GET = async () => {
     }
 
     return Response.json(user)
-  } catch (error) {
-    const errRes = error as Error
+  } catch (err) {
+    const errRes = err as Error
 
     return Response.json(
       { message: errRes.name === "TokenExpiredError" ? "Token expired" : "Invalid token" },

@@ -1,26 +1,15 @@
-import { UserModel } from "@/_helpers/model/user"
-
-export default async function UsersPage() {
-    const users = await UserModel.findAll({
-        attributes: { exclude: ["password"] },
-    })
-
+export default async function HomePage() {
     return (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center py-10">
-            <h1 className="text-4xl font-bold text-indigo-400 mb-8">Users List</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-                {users.map(({ id, login, role }) => (
-                    <div
-                        key={id}
-                        className="bg-gray-800 rounded-2xl shadow-lg p-6 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 w-max text-center"
-                    >
-                        <h2 className="text-2xl font-semibold text-indigo-300">{login}</h2>
-                        <p className={`mt-2 text-lg font-medium ${role === "admin" ? "text-red-400" : "text-green-400"}`}>
-                            {role.toUpperCase()}
-                        </p>
-                    </div>
-                ))}
-            </div>
+        <div className="min-h-screen bg-gray-900 text-gray-200 flex flex-col items-center justify-center">
+            <h1 className="text-4xl md:text-5xl font-bold">
+                Learn <span className="text-green-500">10x Faster!</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 mt-3 tracking-wide">
+                Unlock Your Potential with Personalized Quizzes
+            </p>
+            <button type="button" className="mt-6 px-6 py-3 transition-all duration-300 cursor-pointer bg-green-600 tracking-wide hover:bg-green-700 text-gray-200 text-lg font-semibold hover:scale-105 rounded-lg shadow-md">
+                Get Started Now!
+            </button>
         </div>
     )
 }
