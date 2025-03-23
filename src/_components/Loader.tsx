@@ -7,7 +7,7 @@ interface LoaderProps {
     isLoading: string | boolean | null
 }
 
-export default function Loader({ isLoading }: LoaderProps) {
+export function Loader({ isLoading }: LoaderProps) {
     if (!isLoading) return null
 
     return (
@@ -22,7 +22,6 @@ export default function Loader({ isLoading }: LoaderProps) {
                 justifyContent: "center",
                 alignItems: "center",
                 backgroundColor: "rgba(0, 0, 0, 0.6)",
-                zIndex: 9999,
             }}
         >
             <svg width={0} height={0}>
@@ -35,8 +34,8 @@ export default function Loader({ isLoading }: LoaderProps) {
                 </defs>
             </svg>
             <CircularProgress
-                size={50}
-                thickness={5}
+                size={60}
+                thickness={4}
                 sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }}
             />
         </Box>

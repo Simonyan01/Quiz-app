@@ -19,7 +19,7 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
       })
       .catch((err) => {
         if (err.status == 403) {
-          return router.push("/login")
+          return router.push("/sign-in")
         }
         setError(err.message || "An error occurred")
       })
@@ -40,6 +40,7 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
     data: data as ReturnType,
     refetch,
     setError,
+    setLoading,
     setData,
   }
 }
@@ -54,7 +55,7 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
   const [error, setError] = useState("")
 
   const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType | undefined) => {
-    let invocation: Promise<any>
+    let invocation = null
     setLoading(true)
 
     try {

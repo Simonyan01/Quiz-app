@@ -9,20 +9,27 @@ export const POST = async (req: Request) => {
     const loginRegExp = /^[a-zA-Z0-9_.]{3,20}$/
     const pwdRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
 
-    if (!login.trim() || !password.trim()) {
-      return Response.json({ message: "Մուտքանունն ու գաղտնաբառը պարտադիր են" }, { status: 400 })
+    if (!login.trim()) {
+      return Response.json({ message: "Username is required" }, { status: 400 })
     }
 
     if (!loginRegExp.test(login)) {
       return Response.json(
-        { message: "Մուտքանունը պետք է պարունակի միայն տառեր, թվեր, ստորակետ և կետ, և լինի 3-20 նիշ երկարությամբ" },
+        { message: "Username must contain only letters, numbers, underscore, and dot, and be 3-20 characters long" },
         { status: 400 },
       )
     }
 
+    if (!password.trim()) {
+      return Response.json({ message: "Password is required" }, { status: 400 })
+    }
+
     if (!pwdRegExp.test(password)) {
       return Response.json(
-        { message: "Գաղտնաբառը պետք է ունենա առնվազն 8 նիշ, ներառի մեծատառ, փոքրատառ, թիվ և հատուկ նշան" },
+        {
+          message: `Your password must be at least 8 characters long and include at least one uppercase letter, 
+                    one lowercase letter, one number, and one special character for enhanced security.`,
+        },
         { status: 400 },
       )
     }
@@ -33,14 +40,13 @@ export const POST = async (req: Request) => {
     })
 
     if (found) {
-      return Response.json({ message: "Մուտքանունը արդեն օգտագործվում է" }, { status: 400 })
+      return Response.json({ message: "Username is already in use" }, { status: 400 })
     }
 
     const hashedPwd = await bcrypt.hash(password, 10)
     const newUser = await UserModel.create({ login, password: hashedPwd, ...rest })
-    const { password: _, ...userWithoutPwd } = newUser.toJSON()
 
-    return Response.json({ message: "User successfully created", user: userWithoutPwd }, { status: 201 })
+    return Response.json({ message: "User successfully created", user: newUser }, { status: 201 })
   } catch {
     return Response.json({ message: "Internal server error" }, { status: 500 })
   }

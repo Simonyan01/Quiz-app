@@ -10,6 +10,7 @@ export interface IUser {
   login: string
   password: string
   role: Role
+  image: string
 }
 
 export interface IResponse {
@@ -34,6 +35,7 @@ export interface IQuery<T> {
   loading: boolean
   error: string
   refetch: () => void
+  setLoading: (loader: boolean) => void
   setError: (error: string) => void
   setData: (value: T) => void
 }

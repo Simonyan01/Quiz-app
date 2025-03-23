@@ -1,39 +1,47 @@
 "use client"
 
 import { useHttpMutation } from "@/_helpers/hooks/useHttp"
+import { ErrorMessage } from "@/_components/ErrorMessage"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { IUser, METHODS } from "@/_helpers/lib/types"
-import ErrorMessage from "@/_components/ErrorMessage"
 import InputField from "@/_components/InputField"
+import { Loader } from "@/_components/Loader"
 import { useRouter } from "next/navigation"
-import Loader from "@/_components/Loader"
 import Link from "next/link"
 import "../global.css"
 
-export default function LogInForm() {
+export default function SignInForm() {
     const router = useRouter()
     const { register, handleSubmit, formState: { errors }, reset } = useForm<IUser>()
 
-    const [logIn, error, loading] = useHttpMutation<null, IUser>((data) => {
-        const { role } = data.found
+    const onSuccess = (data: any) => {
+        const { role } = data.user
 
-        role === "admin" && router.push("/admin")
-        router.push("/user")
+        role === "admin"
+            ? router.push("/admin")
+            : router.push("/user")
+
         reset()
-    })
+    }
 
-    const handleLogIn: SubmitHandler<IUser> = (data) => {
-        logIn("/login/api", METHODS.POST, data)
+    const [signIn, error, loading] = useHttpMutation<null, IUser>(onSuccess)
+
+    const handleSignIn: SubmitHandler<IUser> = (data) => {
+        signIn("/sign-in/api", METHODS.POST, data)
     }
 
     return (
-        <section className="min-h-screen flex items-center justify-center bg-gray-900">
+        <section className="min-h-screen flex items-start pt-36 justify-center bg-gray-900">
             <Loader isLoading={loading} />
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
-                <img src="/light-bulb.png" alt="Quiz Icon" className="mx-auto pb-4" draggable={false} />
-
-                <form onSubmit={handleSubmit(handleLogIn)}>
-                    {error && <ErrorMessage message={error} />}
+                <img
+                    src="/light-bulb.png"
+                    alt="Quiz Icon"
+                    className="mx-auto pb-4 animate-pulse"
+                    draggable={false}
+                />
+                <form onSubmit={handleSubmit(handleSignIn)}>
+                    <ErrorMessage message={error} />
                     <InputField
                         label="Username"
                         placeholder="Enter your username"
@@ -54,7 +62,7 @@ export default function LogInForm() {
                         {loading ? "Please wait" : "Log In"}
                     </button>
                 </form>
-                <Link href="/signup" className="font-semibold text-gray-200 flex mt-5 justify-center text-center tracking-wider">
+                <Link href="/sign-up" className="font-semibold text-gray-200 flex mt-5 justify-center text-center tracking-wider">
                     Don't have an account yet?
                 </Link>
             </div>

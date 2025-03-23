@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get("_token")?.value
 
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url))
+    return NextResponse.redirect(new URL("/sign-in", req.url))
   }
 
   try {
@@ -20,23 +20,25 @@ export async function middleware(req: NextRequest) {
       headers: {
         Cookie: `_token=${token}`,
       },
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
+      .catch(() => {
+        throw new Error("Verification failed")
+      })
 
     if (verify.role === "user" && !pathname.startsWith("/user")) {
       return NextResponse.redirect(new URL("/user", req.url))
-    }
-
-    if (verify.role === "admin" && !pathname.startsWith("/admin")) {
+    } else if (verify.role === "admin" && !pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/admin", req.url))
+    } else if (!verify || !verify.role) {
+      return NextResponse.redirect(new URL("/sign-in", req.url))
     }
   } catch (err) {
     const errRes = err as Error
 
-    if (errRes.name === "TokenExpiredError") {
-      return NextResponse.redirect(new URL("/login", req.url))
+    if (errRes.name === "TokenExpiredError" || errRes.message === "Invalid token") {
+      return NextResponse.redirect(new URL("/sign-in", req.url))
     }
-
-    return NextResponse.redirect(new URL("/login", req.url))
   }
 
   return NextResponse.next()
