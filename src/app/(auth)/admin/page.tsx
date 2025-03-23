@@ -3,12 +3,12 @@
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
 import { IUser, METHODS } from "@/_helpers/lib/types"
 import { useRouter } from "next/navigation"
-import Loader from "@/_components/Loader"
-import Layout from "@/_components/Layout"
+import { Loader } from "@/_components/Loader"
+import { Layout } from "@/_components/Layout"
 
 export default function AdminPage() {
     const router = useRouter()
-    const [logout] = useHttpMutation(() => router.push("/"))
+    const [logout] = useHttpMutation(() => router.push("/sign-in"))
     const { data, loading } = useHttpQuery<IUser>("/api/auth")
     const { name, surname, role } = data ?? {}
 

@@ -9,6 +9,7 @@ class User extends Model implements IUser {
   login!: string
   password!: string
   role!: Role
+  image!: string
 }
 
 User.init(
@@ -29,6 +30,7 @@ User.init(
       type: DataTypes.ENUM(...Object.values(Role)),
       defaultValue: Role.USER,
     },
+    image: DataTypes.STRING,
   },
   {
     modelName: "User",

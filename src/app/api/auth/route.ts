@@ -18,7 +18,7 @@ export const GET = async (req: NextRequest) => {
 
     const decoded = jwt.verify(token, key) as { id: number }
     const user = await UserModel.findByPk(decoded.id, {
-      attributes: ["id", "name", "surname", "role"],
+      attributes: ["id", "name", "surname", "role", "image"],
     })
 
     if (!user) {
@@ -29,9 +29,12 @@ export const GET = async (req: NextRequest) => {
   } catch (err) {
     const errRes = err as Error
 
-    return Response.json(
-      { message: errRes.name === "TokenExpiredError" ? "Token expired" : "Invalid token" },
-      { status: 401 },
-    )
+    if (errRes.name === "TokenExpiredError") {
+      return Response.json({ message: "Unauthorized: Token expired" }, { status: 401 })
+    } else if (errRes.name === "JsonWebTokenError") {
+      return Response.json({ message: "Unauthorized: Invalid token" }, { status: 401 })
+    }
+
+    return Response.json({ message: "Server error" }, { status: 500 })
   }
 }
