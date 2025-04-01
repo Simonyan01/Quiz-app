@@ -2,23 +2,25 @@
 
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
 import useImageUpload from "@/_helpers/hooks/useImageUpload"
-import { IUser, METHODS } from "@/_helpers/lib/types"
+import { ImagePicker } from "@/_components/UI/ImagePicker"
+import { Logout } from "@/_components/admin/LogoutButton"
+import { IUser, METHODS } from "@/_helpers/types/types"
+import { Layout } from "@/_components/layout/Layout"
 import { defaultAvatar } from "@/_helpers/constants"
-import ImagePicker from "@/_components/ImagePicker"
+import { Actions } from "@/_components/user/Actions"
+import { Loader } from "@/_components/UI/Loader"
 import { useRouter } from "next/navigation"
-import { Loader } from "@/_components/Loader"
-import { Layout } from "@/_components/Layout"
 import "../../(default)/global.css"
 import { useState } from "react"
 import Image from "next/image"
-import "./global.css"
 
 export default function UserPage() {
     const router = useRouter()
-    const [handleImageSubmit] = useImageUpload()
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [logout] = useHttpMutation(() => router.push("/sign-in"))
     const [selectedImage, setSelectedImage] = useState<File | null>(null)
+
+    const [handleImageSubmit] = useImageUpload()
+    const [logout] = useHttpMutation(() => router.push("/sign-in"))
 
     const { data, loading, refetch } = useHttpQuery<IUser>("/api/auth")
     const { id, name, surname, role, image } = data ?? {}
@@ -27,19 +29,15 @@ export default function UserPage() {
         setSelectedImage(image)
     }
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true)
-    }
-
     const handleLogOut = () => {
         try {
             logout("/api/logout", METHODS.POST)
         } catch (err) {
-            console.error("Logout failed:", err)
+            console.error(`Logout failed:${err}`)
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmitProfile = () => {
         if (selectedImage) {
             handleImageSubmit(selectedImage, id)
             setTimeout(() => refetch(), 300)
@@ -55,7 +53,7 @@ export default function UserPage() {
                     <div className="flex items-center gap-12">
                         <Image
                             src={image ?? defaultAvatar}
-                            onClick={handleOpenModal}
+                            onClick={() => setIsModalOpen(true)}
                             alt="User Avatar"
                             className="size-20 rounded-full border-4 cursor-pointer bg-gradient-to-r from-[#f93b15] via-[#f09819] to-[#f93b15]"
                             width={150}
@@ -73,36 +71,24 @@ export default function UserPage() {
                             </div>
                         )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mt-6 tracking-wide">
-                        <button
-                            type="button"
-                            onClick={() => router.push("/user/quizzes")}
-                            className="bg-indigo-600 p-2 rounded-lg hover:bg-indigo-500 transition-all cursor-pointer">
-                            Quizzes
-                        </button>
-                    </div>
+                    <Actions />
                     {data && (
-                        <button
-                            type="button"
-                            onClick={handleLogOut}
-                            className="w-full p-2 text-gray-200 font-semibold btn-grad cursor-pointer mt-6 rounded-lg text-2xl tracking-wider"
-                        >
-                            {loading && !data ? "Logging out..." : "Logout"}
-                        </button>
+                        <Logout
+                            data={data}
+                            loading={loading}
+                            onLogout={handleLogOut}
+                        />
                     )}
                 </div>
             </section>
-            <div className={`modal-overlay ${isModalOpen ? "open" : ""}`}>
-                <div className={`modal-content ${isModalOpen ? "open" : ""} shadow-xl border border-gray-700`}>
-                    <ImagePicker
-                        image={image}
-                        setOpen={setIsModalOpen}
-                        defaultAvatar={defaultAvatar}
-                        onImageSelect={handleImageSelect}
-                        handleSubmit={handleSubmit}
-                    />
-                </div>
-            </div>
+            <ImagePicker
+                image={image}
+                isOpen={isModalOpen}
+                setOpen={setIsModalOpen}
+                defaultAvatar={defaultAvatar}
+                onImageSelect={handleImageSelect}
+                handleSubmit={handleSubmitProfile}
+            />
         </Layout>
     )
 }

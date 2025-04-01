@@ -13,3 +13,37 @@
 @theme {
   --animate-bounce: bounce 1.2s ease-in-out infinite;
 }
+
+.modal-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease-in-out;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background-color: #1e2939;
+  padding: 20px;
+  width: 100%;
+  max-width: 350px;
+  border-radius: 10px;
+}
+
+.modal-content.open {
+  transform: scale(1);
+}
+
+.toast-progress {
+  background-image: linear-gradient(to right, #f93b15 0%, #f09819 50%, #f93b15 100%);
+  border-radius: 8px;
+}

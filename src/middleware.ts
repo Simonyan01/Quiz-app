@@ -22,15 +22,15 @@ export async function middleware(req: NextRequest) {
       },
     })
       .then((res) => res.json())
-      .catch(() => {
-        throw new Error("Verification failed")
+      .catch((err) => {
+        throw new Error(`Verification failed:${err}`)
       })
 
     if (verify.role === "user" && !pathname.startsWith("/user")) {
       return NextResponse.redirect(new URL("/user", req.url))
     } else if (verify.role === "admin" && !pathname.startsWith("/admin")) {
       return NextResponse.redirect(new URL("/admin", req.url))
-    } else if (!verify || !verify.role) {
+    } else if (!verify.role) {
       return NextResponse.redirect(new URL("/sign-in", req.url))
     }
   } catch (err) {

@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google"
-import { Navbar } from "@/_components/Navbar"
+import { Navbar } from "@/_components/layout/Navbar"
 import type { Metadata } from "next"
 import "./global.css"
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Navbar />
         {children}
       </body>

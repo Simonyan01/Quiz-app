@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { UserModel } from "@/_helpers/model/user"
+import { UserModel } from "@/_helpers/model/entities/user"
 import { promisify } from "util"
 import path from "path"
 import fs from "fs"

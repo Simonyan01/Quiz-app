@@ -1,5 +1,5 @@
-import { UserModel } from "@/_helpers/model/user"
-import { IUser } from "@/_helpers/lib/types"
+import { UserModel } from "@/_helpers/model/entities/user"
+import { IUser } from "@/_helpers/types/types"
 import bcrypt from "bcrypt"
 
 export const POST = async (req: Request) => {

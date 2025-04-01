@@ -1,11 +1,11 @@
 "use client"
 
+import { ErrorMessage } from "@/_components/common/ErrorMessage"
+import { InputField } from "@/_components/common/InputField"
 import { useHttpMutation } from "@/_helpers/hooks/useHttp"
 import { SubmitHandler, useForm } from "react-hook-form"
-import { ErrorMessage } from "@/_components/ErrorMessage"
-import { IUser, METHODS } from "@/_helpers/lib/types"
-import InputField from "@/_components/InputField"
-import { Loader } from "@/_components/Loader"
+import { IUser, METHODS } from "@/_helpers/types/types"
+import { Loader } from "@/_components/UI/Loader"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import "../global.css"
@@ -30,8 +30,8 @@ export default function SignUpForm() {
             <Loader isLoading={loading} />
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
                 <div className="text-center pb-4">
-                    <p className="text-2xl font-bold mb-2 bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">
-                        Create a new account
+                    <p className="text-2xl font-bold mb-1 bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">
+                        Create new account
                     </p>
                     <p className="font-semibold text-gray-200 tracking-wide">It's quick and easy</p>
                 </div>

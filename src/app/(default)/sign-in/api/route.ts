@@ -1,13 +1,13 @@
-import { UserModel } from "@/_helpers/model/user"
-import { IUser } from "@/_helpers/lib/types"
+import { UserModel } from "@/_helpers/model/entities/user"
+import { IUser } from "@/_helpers/types/types"
 import { NextRequest } from "next/server"
 import { cookies } from "next/headers"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
-export const POST = async (request: NextRequest) => {
+export const POST = async (req: NextRequest) => {
   try {
-    const { login, password } = (await request.json()) as IUser
+    const { login, password } = (await req.json()) as IUser
 
     if (!login.trim() || !password.trim()) {
       return Response.json({ message: "Missing credentials!" }, { status: 400 })
@@ -33,12 +33,13 @@ export const POST = async (request: NextRequest) => {
         role: user.role,
       },
       key,
-      { expiresIn: "2d" },
+      { expiresIn: "10d" },
     )
 
     ;(await cookies()).set("_token", token, { secure: true, httpOnly: true })
 
-    return Response.json({ message: "ok", user })
+    const { password: _, ...userWithoutPwd } = user.toJSON()
+    return Response.json({ message: "ok", user: userWithoutPwd })
   } catch {
     return Response.json({ message: "Server error" }, { status: 500 })
   }

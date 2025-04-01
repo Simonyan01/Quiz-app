@@ -1,5 +1,5 @@
+import { METHODS } from "@/_helpers/types/types"
 import { useHttpMutation } from "./useHttp"
-import { METHODS } from "../lib/types"
 
 const useImageUpload = () => {
   const onSuccess = (data: any) => {

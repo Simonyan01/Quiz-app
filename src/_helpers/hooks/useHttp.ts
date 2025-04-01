@@ -1,8 +1,8 @@
-import { IQuery, METHODS, Mutation } from "../lib/types"
+import { IQuery, METHODS, Mutation } from "@/_helpers/types/types"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AxiosError } from "axios"
-import { Http } from "../lib/api"
+import { http } from "@/_helpers/lib/api"
+import type { AxiosError } from "axios"
 
 export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQuery<ReturnType> => {
   const [data, setData] = useState<ReturnType | null>(null)
@@ -13,7 +13,8 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
   const refetch = () => {
     setLoading(true)
 
-    Http.get(url)
+    http
+      .get(url)
       .then((res) => {
         setData(res.data)
       })
@@ -45,35 +46,35 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
   }
 }
 
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 
-export const useHttpMutation = <ReturnType, PayloadType = null>(
-  onSuccess: ((data?: any) => void) | undefined,
+export const useHttpMutation = <ReturnType, PayloadType = undefined>(
+  onSuccess?: (data?: ReturnType) => void,
 ): Mutation<ReturnType, PayloadType> => {
   const [data, setData] = useState<ReturnType | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType | undefined) => {
-    let invocation = null
+  const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType) => {
+    let invocation: Promise<any>
     setLoading(true)
 
     try {
       switch (method) {
         case METHODS.GET:
-          invocation = Http.get(url)
+          invocation = http.get(url)
           break
         case METHODS.POST:
-          invocation = Http.post(url, payload)
+          invocation = http.post(url, payload)
           break
         case METHODS.PUT:
-          invocation = Http.put(url, payload)
+          invocation = http.put(url, payload)
           break
         case METHODS.PATCH:
-          invocation = Http.patch(url, payload)
+          invocation = http.patch(url, payload)
           break
         case METHODS.DELETE:
-          invocation = Http.delete(url)
+          invocation = http.delete(url)
           break
         default:
           throw new Error("Unsupported HTTP method")
@@ -94,5 +95,5 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
     }
   }
 
-  return [make, error, loading, data as ReturnType]
+  return [make, error, loading, data]
 }
