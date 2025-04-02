@@ -3,6 +3,7 @@ import { IQuestion } from "@/_helpers/types/types"
 import { DataTypes, Model } from "sequelize"
 
 class Question extends Model implements IQuestion {
+  id!: number
   quizId!: number
   question!: string
   answers!: string[]

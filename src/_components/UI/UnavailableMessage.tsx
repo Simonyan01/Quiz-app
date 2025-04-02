@@ -1,6 +1,11 @@
-export const UnavailableQuiz = () => {
+interface IMessageProps {
+    message: string
+    additionalMessage?: string
+}
+
+export const UnavailableMessage = ({ message, additionalMessage }: IMessageProps) => {
     return (
-        <div className="flex flex-col items-center justify-center tracking-wide space-y-4 p-5 bg-gray-800 rounded-lg shadow-xl">
+        <div className="flex flex-col items-center justify-center tracking-wide space-y-4 p-4 bg-gray-800 rounded-lg shadow-lg">
             <svg
                 className="w-18 h-18 text-gray-400 animate-pulse"
                 xmlns="http://www.w3.org/2000/svg"
@@ -16,10 +21,10 @@ export const UnavailableQuiz = () => {
             </svg>
 
             <p className="text-gray-500 text-xl font-semibold">
-                No quizzes available
+                {message}
             </p>
             <p className="text-gray-500 text-sm">
-                Looks like you're all caught up! Check back later for new quizzes. 🚀
+                Looks like you're all caught up! Check back later.{additionalMessage} 🚀
             </p>
         </div>
     )

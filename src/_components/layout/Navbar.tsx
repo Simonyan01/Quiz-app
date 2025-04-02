@@ -12,13 +12,13 @@ export const Navbar = () => {
     const { role } = data ?? {}
 
     const handleHomeClick = () => {
-        if (role === "admin") {
-            router.push("/admin")
-        } else if (role === "user") {
-            router.push("/user")
-        } else if (role === "guest") {
-            router.push("/sign-in")
+        const routes = {
+            admin: "/admin",
+            user: "/user",
+            undefined: "/sign-in",
         }
+
+        router.push(routes[role] || "/sign-in")
     }
 
     return (
@@ -29,7 +29,12 @@ export const Navbar = () => {
                     draggable={false}
                     className="flex items-center gap-3 text-3xl font-bold text-gray-200 transition-all hover:scale-115 duration-400"
                 >
-                    <img src="/light-bulb.png" alt="Quiz Icon" className="w-10" draggable={false} />
+                    <img
+                        src="/light-bulb.png"
+                        alt="Quiz Icon"
+                        className="w-10"
+                        draggable={false}
+                    />
                     Quiz <span className="bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">App</span>
                 </Link>
                 <ul className="flex items-center gap-6">

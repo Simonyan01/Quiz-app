@@ -108,7 +108,7 @@ export default function QuizForm() {
 
     return (
         <Layout>
-            <ToastContainer />
+            <ToastContainer /> 
             <Loader isLoading={loading} />
             <section className="max-w-4xl mx-auto bg-gray-800 text-white p-6 m-12 rounded-lg shadow-lg tracking-wider" ref={contentRef}>
                 <h2 className="text-3xl font-bold mb-3 text-center">Add Quiz</h2>
@@ -201,7 +201,7 @@ export default function QuizForm() {
                     ))}
                     <button
                         type="button"
-                        onClick={() => append({ question: "", answers: ["", "", "", ""], correctAnswer: "" })}
+                        onClick={() => append({ id: Date.now(), question: "", answers: ["", "", "", ""], correctAnswer: "" })}
                         className="w-full bg-blue-600 hover:bg-blue-500 cursor-pointer transition-all p-2 rounded text-white"
                     >
                         {fields.length === 0 ? "Add question" : "Add another question"}

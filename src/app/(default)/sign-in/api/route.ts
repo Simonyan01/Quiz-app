@@ -33,13 +33,15 @@ export const POST = async (req: NextRequest) => {
         role: user.role,
       },
       key,
-      { expiresIn: "10d" },
+      { expiresIn: "2d" },
     )
 
     ;(await cookies()).set("_token", token, { secure: true, httpOnly: true })
 
-    const { password: _, ...userWithoutPwd } = user.toJSON()
-    return Response.json({ message: "ok", user: userWithoutPwd })
+    const userWithoutPwd = user.toJSON()
+    delete userWithoutPwd.password
+
+    return Response.json({ message: "OK", user: userWithoutPwd })
   } catch {
     return Response.json({ message: "Server error" }, { status: 500 })
   }

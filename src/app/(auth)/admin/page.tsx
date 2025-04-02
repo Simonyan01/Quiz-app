@@ -78,13 +78,12 @@ export default function AdminDashboard() {
                             priority
                         />
                         {!data ? (
-                            <div className="bg-gradient-to-r from-red-500 to-red-800 tracking-wide text-gray-200 p-4 rounded-lg text-center font-semibold shadow-lg text-xl">
+                            <div className="bg-gradient-to-r from-red-500 to-red-800 tracking-wide text-gray-200 p-3 rounded-lg text-center font-semibold shadow-lg text-xl">
                                 Data isn't available yet 🚨
                             </div>
                         ) : (
                             <div>
                                 <h2 className="text-4xl font-bold text-amber-50">{name} {surname}</h2>
-                                <p className="text-gray-300">{role}</p>
                             </div>
                         )}
                     </div>

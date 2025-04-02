@@ -14,6 +14,7 @@ export interface IUser {
 }
 
 export interface IQuestion {
+  id: number
   quizId?: number
   question: string
   answers: string[]

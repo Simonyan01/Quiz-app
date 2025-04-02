@@ -1,7 +1,7 @@
 "use client"
 
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
-import { UnavailableQuiz } from "@/_components/UI/UnavailableQuiz"
+import { UnavailableMessage } from "@/_components/UI/UnavailableMessage"
 import { ScrollButton } from "@/_components/common/ScrollButton"
 import { IQuiz, METHODS } from "@/_helpers/types/types"
 import { Layout } from "@/_components/layout/Layout"
@@ -14,7 +14,7 @@ export default function Quizzes() {
     const contentRef = useRef(null)
 
     const [deleteQuiz, _, isLoaded] = useHttpMutation<any>(() => refetch())
-    const { data: quizzes, loading, refetch } = useHttpQuery<IQuiz[]>("/api/quizzes")
+    const { data: quizzes = [], loading, refetch } = useHttpQuery<IQuiz[]>("/api/quizzes")
 
     const handleEdit = (id: number) => {
         router.push(`/admin/quizzes/edit/${id}`)
@@ -45,7 +45,7 @@ export default function Quizzes() {
                         Quizzes
                     </h2>
                     {!quizzes || quizzes.length === 0 ? (
-                        <UnavailableQuiz />
+                        <UnavailableMessage message="No quizzes available" additionalMessage="for new quizzes" />
                     ) : (
                         <ul className="space-y-4">
                             {quizzes.map((quiz) => (
