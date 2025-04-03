@@ -1,35 +1,26 @@
 import { IQuery, METHODS, Mutation } from "@/_helpers/types/types"
-import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { http } from "@/_helpers/lib/api"
 import type { AxiosError } from "axios"
 
-const cache: Record<string, any> = {}
-
 export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQuery<ReturnType> => {
-  const [data, setData] = useState<ReturnType | null>(cache[url] || null)
-  const [loading, setLoading] = useState<boolean>(mount && !cache[url])
+  const [data, setData] = useState<ReturnType | null>(null)
+  const [loading, setLoading] = useState<boolean>(mount)
   const [error, setError] = useState<string>("")
   const router = useRouter()
 
   const refetch = () => {
-    if (cache[url]) {
-      setData(cache[url])
-      setLoading(false)
-      return
-    }
-
     setLoading(true)
 
     http
       .get(url)
       .then((res) => {
-        cache[url] = res.data
         setData(res.data)
       })
       .catch((err) => {
-        if (err.status == 403) {
-          return router.push("/sign-in")
+        if (err.response?.status === 403) {
+          router.push("/sign-in")
         }
         setError(err.message)
       })
@@ -56,15 +47,21 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
 
 // ------------------------------------------------------------------------------------------------
 
-export const useHttpMutation = <ReturnType, PayloadType = undefined>(
+const cache: Record<string, any> = {}
+
+export const useHttpMutation = <ReturnType, PayloadType = null>(
   onSuccess?: (data?: ReturnType) => void,
 ): Mutation<ReturnType, PayloadType> => {
   const [data, setData] = useState<ReturnType | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>("")
 
+  const invalidateCache = (url: string) => {
+    delete cache[url]
+  }
+
   const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType) => {
-    let invocation: Promise<any>
+    let invocation = null
     setLoading(true)
 
     try {
@@ -83,6 +80,7 @@ export const useHttpMutation = <ReturnType, PayloadType = undefined>(
           break
         case METHODS.DELETE:
           invocation = http.delete(url)
+          invalidateCache(url)
           break
         default:
           throw new Error("Unsupported HTTP method")
@@ -107,5 +105,5 @@ export const useHttpMutation = <ReturnType, PayloadType = undefined>(
     }
   }
 
-  return [make, error, loading, data]
+  return [make, error, loading, data, invalidateCache]
 }

@@ -18,7 +18,7 @@ Question.init(
       autoIncrement: true,
     },
     question: DataTypes.STRING,
-    answers: DataTypes.JSON,
+    answers: DataTypes.JSONB,
     correctAnswer: DataTypes.STRING,
     quizId: {
       type: DataTypes.INTEGER,
@@ -28,8 +28,6 @@ Question.init(
       },
       onDelete: "CASCADE",
     },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
   },
   {
     modelName: "Question",

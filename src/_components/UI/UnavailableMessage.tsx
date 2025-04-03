@@ -24,7 +24,7 @@ export const UnavailableMessage = ({ message, additionalMessage }: IMessageProps
                 {message}
             </p>
             <p className="text-gray-500 text-sm">
-                Looks like you're all caught up! Check back later.{additionalMessage} 🚀
+                Looks like you're all caught up! Check back later {additionalMessage} 🚀
             </p>
         </div>
     )

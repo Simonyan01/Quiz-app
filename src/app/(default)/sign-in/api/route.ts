@@ -36,7 +36,8 @@ export const POST = async (req: NextRequest) => {
       { expiresIn: "2d" },
     )
 
-    ;(await cookies()).set("_token", token, { secure: true, httpOnly: true })
+    const cookieStore = await cookies()
+    cookieStore.set("_token", token)
 
     const userWithoutPwd = user.toJSON()
     delete userWithoutPwd.password

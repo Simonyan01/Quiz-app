@@ -25,7 +25,8 @@ export const GET = async (req: NextRequest) => {
     if (!user) {
       return Response.json({ message: "User not found" }, { status: 404 })
     }
-    // await syncDatabase()
+
+    await syncDatabase()
     return Response.json(user)
   } catch (err) {
     const errRes = err as Error

@@ -31,8 +31,6 @@ User.init(
       defaultValue: Role.USER,
     },
     image: DataTypes.STRING,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
   },
   {
     modelName: "User",

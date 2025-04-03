@@ -42,19 +42,3 @@ export const POST = async (req: NextRequest) => {
     return Response.json({ message: "Server error" }, { status: 500 })
   }
 }
-
-// export const PUT = async (req: NextRequest) => {
-//   try {
-//     const { id, title, description, questions } = await req.json()
-//     const quiz = await QuizModel.findByPk(id)
-
-//     if (!quiz) {
-//       return Response.json({ message: "Quiz not found" }, { status: 404 })
-//     }
-
-//     await quiz.update({ title, description, questions })
-//     return Response.json(quiz)
-//   } catch {
-//     return Response.json({ message: "Server error" }, { status: 500 })
-//   }
-// }

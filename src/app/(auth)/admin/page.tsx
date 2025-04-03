@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     const [logout] = useHttpMutation(() => router.push("/sign-in"))
 
     const { data, loading, refetch } = useHttpQuery<IUser>("/api/auth")
-    const { id, name, surname, role, image } = data ?? {}
+    const { id, name, surname, image } = data ?? {}
 
     const handleImageSelect = (image: File) => {
         setSelectedImage(image)

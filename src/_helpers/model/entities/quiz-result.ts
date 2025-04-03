@@ -1,7 +1,8 @@
+import { IQuizResult } from "@/_helpers/types/types"
 import sequelize from "@/_helpers/config/sequelize"
 import { DataTypes, Model } from "sequelize"
 
-class QuizResult extends Model {
+class QuizResult extends Model implements IQuizResult {
   id!: number
   userId!: number
   quizId!: number
@@ -20,8 +21,6 @@ QuizResult.init(
     quizId: DataTypes.INTEGER,
     score: DataTypes.INTEGER,
     completedAt: DataTypes.DATE,
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
   },
   {
     modelName: "QuizResult",

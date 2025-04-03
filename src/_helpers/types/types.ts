@@ -29,12 +29,19 @@ export interface IQuiz {
   createdBy: number
 }
 
-export interface IQuizResult {
+export type QuizAnswer = {
   id: number
-  quizId: number
+  selectedAnswer: string
+  isCorrect?: any
+}
+
+export interface IQuizResult {
+  id?: number
   userId: number
-  score: number
-  answers: string[]
+  quizId: number | string
+  score?: number
+  answers?: QuizAnswer[]
+  completedAt: Date
 }
 
 // REST API ----------------- |
@@ -62,4 +69,5 @@ export type Mutation<T, V = undefined> = [
   error: string,
   loading: boolean | null,
   data: T | null,
+  (url: string) => void,
 ]

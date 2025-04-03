@@ -28,8 +28,6 @@ Quiz.init(
         key: "id",
       },
     },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
   },
   {
     modelName: "Quiz",
