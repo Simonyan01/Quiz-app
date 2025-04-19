@@ -1,6 +1,7 @@
 import sequelize from "@/_helpers/config/sequelize"
 import { IQuestion } from "@/_helpers/types/types"
 import { DataTypes, Model } from "sequelize"
+import "@/_helpers/config/associations"
 
 class Question extends Model implements IQuestion {
   id!: number
@@ -18,7 +19,7 @@ Question.init(
       autoIncrement: true,
     },
     question: DataTypes.STRING,
-    answers: DataTypes.JSONB,
+    answers: DataTypes.JSON,
     correctAnswer: DataTypes.STRING,
     quizId: {
       type: DataTypes.INTEGER,

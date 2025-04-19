@@ -5,6 +5,7 @@ import { IUser } from "@/_helpers/types/types"
 import { FaUserCircle } from "react-icons/fa"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 
 export const Navbar = () => {
     const router = useRouter()
@@ -15,7 +16,7 @@ export const Navbar = () => {
         const routes = {
             admin: "/admin",
             user: "/user",
-            undefined: "/sign-in",
+            guest: "/sign-in",
         }
 
         router.push(routes[role] || "/sign-in")
@@ -29,11 +30,14 @@ export const Navbar = () => {
                     draggable={false}
                     className="flex items-center gap-3 text-3xl font-bold text-gray-200 transition-all hover:scale-115 duration-400"
                 >
-                    <img
+                    <Image
                         src="/light-bulb.png"
                         alt="Quiz Icon"
+                        width={300}
+                        height={200}
                         className="w-10"
                         draggable={false}
+                        unoptimized
                     />
                     Quiz <span className="bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">App</span>
                 </Link>

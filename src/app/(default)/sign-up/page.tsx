@@ -21,19 +21,19 @@ export default function SignUpForm() {
 
     const [signUp, error, loading] = useHttpMutation<null, IUser>(onSuccess)
 
-    const handleSignUp: SubmitHandler<IUser> = (data) => {
-        signUp("/sign-up/api", METHODS.POST, data)
+    const handleSignUp: SubmitHandler<IUser> = async (data) => {
+        await signUp("/sign-up/api", METHODS.POST, data)
     }
 
     return (
         <section className={`${error ? "pt-10" : "pt-20"} min-h-screen flex items-start justify-center bg-gray-900`}>
-            <Loader isLoading={loading} />
+            {loading && <Loader isLoading={loading} />}
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
                 <div className="text-center pb-4">
                     <p className="text-2xl font-bold mb-1 bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">
                         Create new account
                     </p>
-                    <p className="font-semibold text-gray-200 tracking-wide">It's quick and easy</p>
+                    <p className="font-semibold text-gray-200 tracking-wide">It&apos;s quick and easy</p>
                 </div>
                 <form onSubmit={handleSubmit(handleSignUp)}>
                     <ErrorMessage message={error} />

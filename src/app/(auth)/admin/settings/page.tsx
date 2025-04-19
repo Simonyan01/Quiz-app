@@ -25,14 +25,14 @@ export default function Settings() {
 
     const [changeSettings, error, loading] = useHttpMutation<any, IFormData>(() => {
         notify('success', 'Settings changed successfully')
-        setTimeout(() => router.push("/admin"), 3000);
+        setTimeout(() => router.push("/admin"), 2500);
         reset()
     })
 
-    const onSubmit = (data: IFormData) => {
+    const onSubmit = async (data: IFormData) => {
         try {
             const newData = { ...data, userId: id }
-            changeSettings("/api/settings", METHODS.POST, newData)
+            await changeSettings("/api/settings", METHODS.POST, newData)
         } catch (err) {
             notify('error', 'Failed to change password')
         }
@@ -42,7 +42,7 @@ export default function Settings() {
         <Layout>
             <ToastContainer />
             <section className="flex justify-center items-center min-h-screen bg-gray-900">
-                <Loader isLoading={loading} />
+                {loading && <Loader isLoading={loading} />}
                 <div className="bg-gray-800 p-8 rounded-xl shadow-lg max-w-sm w-full tracking-wide border border-gray-700">
                     <h2 className={`text-3xl font-semibold text-center text-gray-200 ${error ? "mb-6" : "mb-4"}`}>General security</h2>
                     <ErrorMessage message={error} />

@@ -1,3 +1,5 @@
+import "@/_helpers/config/associations"
+
 import { UserModel } from "@/_helpers/model/entities/user"
 import { NextRequest } from "next/server"
 import bcrypt from "bcrypt"

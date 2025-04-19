@@ -1,3 +1,5 @@
+import "@/_helpers/config/associations"
+
 import { UserModel } from "@/_helpers/model/entities/user"
 import { IUser } from "@/_helpers/types/types"
 import { NextRequest } from "next/server"
@@ -37,7 +39,10 @@ export const POST = async (req: NextRequest) => {
     )
 
     const cookieStore = await cookies()
-    cookieStore.set("_token", token)
+    cookieStore.set("_token", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 2,
+    })
 
     const userWithoutPwd = user.toJSON()
     delete userWithoutPwd.password

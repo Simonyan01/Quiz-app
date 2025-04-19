@@ -2,12 +2,13 @@
 
 import CircularProgress from "@mui/material/CircularProgress"
 import { Box } from "@mui/material"
+import { memo } from "react"
 
 interface LoaderProps {
-    isLoading: string | boolean | null
+    isLoading: boolean | null
 }
 
-export const Loader = ({ isLoading }: LoaderProps) => {
+export const Loader = memo(({ isLoading }: LoaderProps) => {
     if (!isLoading) return null
 
     return (
@@ -16,12 +17,12 @@ export const Loader = ({ isLoading }: LoaderProps) => {
                 position: "fixed",
                 top: 0,
                 left: 0,
-                width: "100vw",
-                height: "100vh",
+                width: "100%",
+                height: "100%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
                 zIndex: 9999
             }}
         >
@@ -35,10 +36,12 @@ export const Loader = ({ isLoading }: LoaderProps) => {
                 </defs>
             </svg>
             <CircularProgress
-                size={60}
+                size={55}
                 thickness={4}
                 sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }}
             />
         </Box>
     )
-}
+})
+
+Loader.displayName = "Loader"

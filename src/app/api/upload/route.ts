@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from "next/server"
+ import "@/_helpers/config/associations"
+
 import { UserModel } from "@/_helpers/model/entities/user"
+import { NextRequest, NextResponse } from "next/server"
 import { promisify } from "util"
+import crypto from "crypto"
 import path from "path"
 import fs from "fs"
 
@@ -25,9 +28,11 @@ export const POST = async (req: NextRequest) => {
       await mkdir(uploadDir, { recursive: true })
     }
 
-    const fileName = `${userId}-${file.name}`
-    const filePath = path.join(uploadDir, fileName)
     const buffer = Buffer.from(await file.arrayBuffer())
+    const hash = crypto.createHash("sha256").update(buffer).digest("hex").slice(0, 14)
+    const ext = path.extname(file.name)
+    const fileName = `${hash}${ext}`
+    const filePath = path.join(uploadDir, fileName)
 
     await fs.promises.writeFile(filePath, buffer)
 
@@ -36,7 +41,7 @@ export const POST = async (req: NextRequest) => {
       return NextResponse.json({ message: "User not found" }, { status: 404 })
     }
 
-    user.image = `/uploads/${fileName}`
+    user.image = fileName
     await user.save()
 
     return NextResponse.json({ message: "Image uploaded successfully", filePath: user.image }, { status: 200 })

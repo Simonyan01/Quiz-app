@@ -13,7 +13,7 @@ export default function Quizzes() {
 
     return (
         <Layout>
-            <Loader isLoading={loading} />
+            {loading && <Loader isLoading={loading} />}
             <section className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200 p-6" ref={contentRef}>
                 <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                     <h2 className="text-3xl font-bold text-amber-400 text-center mb-6">Quizzes</h2>

@@ -1,7 +1,8 @@
 import { Sidebar } from "./Sidebar"
+import { ReactNode } from "react"
 
 interface IProps {
-    children: React.ReactNode
+    children: ReactNode
 }
 
 export const Layout = ({ children }: IProps) => {

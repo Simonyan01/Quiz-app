@@ -22,6 +22,7 @@ export const ImagePicker = ({
 }: ImagePickerProps) => {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [imagePreview, setImagePreview] = useState<string>(defaultAvatar)
+    const imageUrl = image ? `/uploads/${image}` : defaultAvatar
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null
@@ -47,8 +48,8 @@ export const ImagePicker = ({
     const handleClose = () => setOpen(false)
 
     useEffect(() => {
-        setImagePreview(image || defaultAvatar)
-    }, [image || defaultAvatar])
+        setImagePreview(imageUrl)
+    }, [imageUrl])
 
     return (
         <div className={`modal-overlay ${isOpen ? "open" : ""}`}>

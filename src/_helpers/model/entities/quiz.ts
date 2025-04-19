@@ -1,12 +1,15 @@
+import { IQuestion, IQuiz } from "@/_helpers/types/types"
 import sequelize from "@/_helpers/config/sequelize"
-import { IQuiz } from "@/_helpers/types/types"
 import { DataTypes, Model } from "sequelize"
+import "@/_helpers/config/associations"
 
 class Quiz extends Model implements IQuiz {
   id!: number
   title!: string
   createdBy!: number
   description!: string
+  image!: File | null
+  questions!: IQuestion[]
 }
 
 Quiz.init(
@@ -19,6 +22,10 @@ Quiz.init(
     title: DataTypes.STRING,
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    image: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
     createdBy: {

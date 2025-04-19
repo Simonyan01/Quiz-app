@@ -1,3 +1,5 @@
+import "@/_helpers/config/associations"
+
 import { UserModel } from "@/_helpers/model/entities/user"
 import { IUser } from "@/_helpers/types/types"
 import bcrypt from "bcrypt"

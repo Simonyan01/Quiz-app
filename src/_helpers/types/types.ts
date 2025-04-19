@@ -1,7 +1,9 @@
-export enum Role {
-  USER = "user",
-  ADMIN = "admin",
-}
+export const Role = {
+  USER: "user",
+  ADMIN: "admin",
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]
 
 export interface IUser {
   id: number
@@ -13,26 +15,28 @@ export interface IUser {
   image: string
 }
 
-export interface IQuestion {
+export interface IQuiz {
   id: number
+  title: string
+  createdBy: number
+  description: string
+  image: File | string | null
+  questions?: IQuestion[]
+}
+
+export interface IQuestion {
+  id?: number
   quizId?: number
   question: string
   answers: string[]
   correctAnswer: string
 }
 
-export interface IQuiz {
-  id: number
-  title: string
-  description: string
-  questions?: IQuestion[]
-  createdBy: number
-}
-
 export type QuizAnswer = {
   id: number
   selectedAnswer: string
-  isCorrect?: any
+  isCorrect?: boolean
+  correctAnswer?: string
 }
 
 export interface IQuizResult {
@@ -41,18 +45,20 @@ export interface IQuizResult {
   quizId: number | string
   score?: number
   answers?: QuizAnswer[]
-  completedAt: Date
+  completedAt: Date | string
 }
 
 // REST API ----------------- |
 
-export enum METHODS {
-  GET = "GET",
-  POST = "POST",
-  PUT = "PUT",
-  PATCH = "PATCH",
-  DELETE = "DELETE",
-}
+export const METHODS = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  PATCH: "PATCH",
+  DELETE: "DELETE",
+} as const
+
+export type METHODS = (typeof METHODS)[keyof typeof METHODS]
 
 export interface IQuery<T> {
   data: T

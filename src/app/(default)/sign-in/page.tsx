@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { IUser, METHODS } from "@/_helpers/types/types"
 import { Loader } from "@/_components/UI/Loader"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import Link from "next/link"
 import "../global.css"
 
@@ -26,18 +27,21 @@ export default function SignInForm() {
 
     const [signIn, error, loading] = useHttpMutation<null, IUser>(onSuccess)
 
-    const handleSignIn: SubmitHandler<IUser> = (data) => {
-        signIn("/sign-in/api", METHODS.POST, data)
+    const handleSignIn: SubmitHandler<IUser> = async (data) => {
+        await signIn("/sign-in/api", METHODS.POST, data)
     }
 
     return (
         <section className="min-h-screen flex items-start pt-36 justify-center bg-gray-900">
-            <Loader isLoading={loading} />
+            {loading && <Loader isLoading={loading} />}
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
-                <img
+                <Image
                     src="/light-bulb.png"
                     alt="Quiz Icon"
+                    width={70}
+                    height={70}
                     className="mx-auto pb-4 animate-pulse"
+                    unoptimized
                     draggable={false}
                 />
                 <form onSubmit={handleSubmit(handleSignIn)}>
@@ -63,7 +67,7 @@ export default function SignInForm() {
                     </button>
                 </form>
                 <Link href="/sign-up" className="font-semibold text-gray-200 flex mt-5 justify-center text-center tracking-wider">
-                    Don't have an account yet?
+                    Don&apos;t have an account yet?
                 </Link>
             </div>
         </section>

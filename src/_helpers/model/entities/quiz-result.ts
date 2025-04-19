@@ -1,6 +1,7 @@
 import { IQuizResult } from "@/_helpers/types/types"
 import sequelize from "@/_helpers/config/sequelize"
 import { DataTypes, Model } from "sequelize"
+import "@/_helpers/config/associations"
 
 class QuizResult extends Model implements IQuizResult {
   id!: number

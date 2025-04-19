@@ -20,9 +20,9 @@ export const Sidebar = () => {
         setOpen(prev => !prev)
     }
 
-    const handleLogOut = () => {
+    const handleLogOut = async () => {
         try {
-            logout("/api/logout", METHODS.POST)
+            await logout("/api/logout", METHODS.POST)
         } catch (err) {
             console.error(`Logout failed:${err}`)
         }

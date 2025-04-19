@@ -5,24 +5,27 @@ import { UnavailableMessage } from "@/_components/UI/UnavailableMessage"
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
 import { ScrollButton } from "@/_components/common/ScrollButton"
 import { Layout } from "@/_components/layout/Layout"
+import { useEffect, useRef, useState } from "react"
+import { notify } from "@/_helpers/hooks/notify"
 import { Loader } from "@/_components/UI/Loader"
 import { useParams } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { useRef, useState } from "react"
 
 type AnswerDisabledStatus = Record<number, boolean>
 type SelectedAnswers = Record<number, QuizAnswer>
 
 export default function QuizPage() {
-    const params = useParams()
-    const { quizId } = params
+    const { quizId } = useParams()
     const contentRef = useRef(null)
     const { handleSubmit } = useForm<IQuestion>()
+    const [score, setScore] = useState<number | null>(0)
+    const [totalQuestions, setTotalQuestions] = useState<number>(0)
     const [selectedAnswers, setSelectedAnswers] = useState<SelectedAnswers>({})
     const [isAnswerDisabled, setIsAnswerDisabled] = useState<AnswerDisabledStatus>({})
-    const [isCheckingAnswer, setIsCheckingAnswer] = useState(false)
+    const [isCheckingAnswer, setIsCheckingAnswer] = useState<boolean>(false)
 
-    const { data: questions, loading } = useHttpQuery<IQuestion[]>(`/api/questions/${quizId}`)
+    const { data: questions = [], loading } = useHttpQuery<IQuestion[]>(`/api/questions/${quizId}`)
+    const allAnswered = Object.keys(selectedAnswers).length === questions?.length
     const [submitQuizResult] = useHttpMutation<IQuizResult, IQuizResult>()
     const { data } = useHttpQuery<IUser>("/api/auth")
     const { id } = data ?? {}
@@ -47,13 +50,18 @@ export default function QuizPage() {
                     [id]: {
                         id,
                         selectedAnswer: answer,
-                        isCorrect: data.isCorrect
+                        isCorrect: data.isCorrect,
+                        correctAnswer: data.correctAnswer,
                     }
                 }))
 
                 setIsAnswerDisabled((prev) => ({
                     ...prev, [id]: true,
                 }))
+
+                if (data.isCorrect) {
+                    setScore((prevScore) => (prevScore ?? 0) + 1)
+                }
             } else {
                 console.error(`Error checking answer:${data.message}`)
             }
@@ -66,6 +74,11 @@ export default function QuizPage() {
     }
 
     const handleSubmitResult = async () => {
+        if (!allAnswered) {
+            notify("error", "Please answer all the questions before submitting.")
+            return
+        }
+
         const answers = Object.keys(selectedAnswers).map((id) => {
             const answer = selectedAnswers[+id]
             return {
@@ -75,22 +88,31 @@ export default function QuizPage() {
             }
         })
 
+        const now = new Date()
+        const completedAt = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString()
+
         const result: IQuizResult = {
             userId: id,
             quizId: String(quizId),
             answers,
-            completedAt: new Date()
+            completedAt
         }
 
         await submitQuizResult(`/api/quizzes/${quizId}`, METHODS.POST, result)
     }
 
+    useEffect(() => {
+        if (questions) {
+            setTotalQuestions(questions.length)
+        }
+    }, [questions])
+
     return (
         <Layout>
-            <Loader isLoading={loading || isCheckingAnswer} />
+            {loading && <Loader isLoading={loading || isCheckingAnswer} />}
             <section ref={contentRef} className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-8 flex justify-center items-center">
                 <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-xl">
-                    <h1 className="text-4xl font-bold text-center mb-6 tracking-wide text-indigo-400">Quiz Time!</h1>
+                    <h1 className="text-4xl font-bold text-center mb-6 tracking-wide bg-gradient-to-bl from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">Quiz Time!</h1>
                     {!questions || questions.length === 0 ? (
                         <UnavailableMessage message="No questions available for this quiz" />
                     ) : (
@@ -102,32 +124,43 @@ export default function QuizPage() {
                                             {question}
                                         </h3>
                                         <ul className="space-y-2">
-                                            {answers.map((answer, index) => (
-                                                <li
-                                                    key={index}
-                                                    onClick={() => handleAnswerClick(id, answer)}
-                                                    style={{ pointerEvents: isAnswerDisabled[id] ? "none" : "auto" }}
-                                                    className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer text-[18px] transition-all ease-linear text-gray-200 
-                                                    ${selectedAnswers[id]?.selectedAnswer === answer ? (selectedAnswers[id].isCorrect ? "bg-green-600" : "bg-red-400") : "bg-gray-600 hover:bg-gray-500"}`}
-                                                >
-                                                    {answer}
-                                                </li>
-                                            ))}
+                                            {answers.map((answer, idx) => {
+                                                const selected = selectedAnswers[id!]
+                                                const isSelected = selected?.selectedAnswer === answer
+                                                const isCorrectAnswer = selected?.correctAnswer === answer
+
+                                                return (
+                                                    <li
+                                                        key={idx}
+                                                        onClick={() => handleAnswerClick(id!, answer)}
+                                                        style={{ pointerEvents: isAnswerDisabled[id!] ? "none" : "auto" }}
+                                                        className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer text-[18px] transition-all ease-linear text-gray-200
+                                                             ${isSelected
+                                                                ? (selected.isCorrect ? "bg-green-600" : "bg-red-400")
+                                                                : isCorrectAnswer ? "bg-green-600" : "bg-gray-600 hover:bg-gray-500"
+                                                            }`}
+                                                    >
+                                                        {answer}
+                                                    </li>
+                                                )
+                                            })}
                                         </ul>
                                     </li>
                                 ))}
                             </ul>
                             <button
                                 type="submit"
-                                className="w-full mt-4 px-5 py-3 bg-blue-500 cursor-pointer hover:bg-blue-600 rounded-lg shadow-lg text-lg font-semibold tracking-wide transition-all duration-200">
+                                disabled={!allAnswered}
+                                className={`w-full mt-4 px-5 py-3 rounded-lg shadow-lg text-lg font-semibold tracking-wide transition-all duration-200
+                                    ${!allAnswered ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 cursor-pointer"}`}>
                                 Submit Answers
                             </button>
-                            {/* {score !== null && (
-                                <div className="text-center mt-4 p-4 bg-gray-900 text-white rounded-lg shadow-lg">
-                                    <h2 className="text-2xl font-bold">Your Score: {score}</h2>
-                                </div>
-                            )} */}
                         </form>
+                    )}
+                    {score !== null && totalQuestions > 0 && (
+                        <div className={`fixed top-1/4 right-6 transform -translate-y-1/2 p-5 rounded-xl shadow-xs w-max tracking-wide ${score === totalQuestions ? "bg-green-700 animate-bounce" : "bg-gray-800 text-gray-300"}`}>
+                            <h2 className="text-xl font-bold text-center text-shadow"> {score === totalQuestions ? "Perfect Score" : "Your Performance"}: {score} / {totalQuestions}</h2>
+                        </div>
                     )}
                 </div>
             </section>

@@ -1,6 +1,7 @@
 import { IUser, Role } from "@/_helpers/types/types"
 import sequelize from "@/_helpers/config/sequelize"
 import { DataTypes, Model } from "sequelize"
+import "@/_helpers/config/associations"
 
 class User extends Model implements IUser {
   id!: number

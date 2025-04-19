@@ -1,3 +1,5 @@
+import "@/_helpers/config/associations"
+
 import { QuestionModel } from "@/_helpers/model/entities/question"
 import { NextRequest } from "next/server"
 

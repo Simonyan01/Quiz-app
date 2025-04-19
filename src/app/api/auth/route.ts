@@ -1,3 +1,5 @@
+import "@/_helpers/config/associations"
+
 import { UserModel } from "@/_helpers/model/entities/user"
 import { syncDatabase } from "@/_helpers/model/utils/sync"
 import { NextRequest } from "next/server"
@@ -26,7 +28,7 @@ export const GET = async (req: NextRequest) => {
       return Response.json({ message: "User not found" }, { status: 404 })
     }
 
-    await syncDatabase()
+    // await syncDatabase()
     return Response.json(user)
   } catch (err) {
     const errRes = err as Error

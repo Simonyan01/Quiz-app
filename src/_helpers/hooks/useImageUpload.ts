@@ -8,12 +8,12 @@ const useImageUpload = () => {
 
   const [uploadImage, error, loading, uploadedData] = useHttpMutation<any, FormData>(onSuccess)
 
-  const handleImageSubmit = (image: File, id: string) => {
+  const handleImageSubmit = async (image: File, id: string) => {
     const formData = new FormData()
     formData.append("userId", id)
     formData.append("image", image)
 
-    uploadImage("/api/upload", METHODS.POST, formData)
+    await uploadImage("/api/upload", METHODS.POST, formData)
   }
 
   return [handleImageSubmit, loading, error, uploadedData]

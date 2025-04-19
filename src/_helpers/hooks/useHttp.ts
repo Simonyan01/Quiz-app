@@ -32,7 +32,7 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
   useEffect(() => {
     if (!mount) return
     refetch()
-  }, [url])
+  }, [mount, url])
 
   return {
     data: data as ReturnType,
@@ -61,7 +61,7 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
   }
 
   const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType) => {
-    let invocation = null
+    let invocation: Promise<any>
     setLoading(true)
 
     try {
@@ -87,13 +87,16 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
       }
 
       const response = await invocation
-      setData(response.data)
+      const result = response.data as ReturnType
+      setData(result)
 
       if (method !== METHODS.GET) {
         cache[url] = response.data
       }
 
-      onSuccess?.(response.data)
+      if (result) {
+        onSuccess?.(result)
+      }
     } catch (err) {
       const errRes = err as AxiosError
       const res = errRes.response?.data as { message: string }
@@ -105,5 +108,5 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
     }
   }
 
-  return [make, error, loading, data, invalidateCache]
+  return [make, error, loading, data, () => {}]
 }

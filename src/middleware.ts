@@ -17,7 +17,6 @@ export async function middleware(req: NextRequest) {
   try {
     const verify = await fetch(new URL("/api/auth", req.url), {
       method: "GET",
-      cache: "no-store",
       headers: {
         Cookie: `_token=${token}`,
       },

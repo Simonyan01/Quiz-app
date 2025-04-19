@@ -31,16 +31,16 @@ UserModel.hasMany(QuizResultModel, {
   as: "results",
 })
 
-// Quiz <-> QuizResult -------------------------------
-QuizModel.hasMany(QuizResultModel, {
-  foreignKey: "quizId",
-  as: "results",
-})
-
 // QuizResult <-> User -------------------------------
 QuizResultModel.belongsTo(UserModel, {
   foreignKey: "userId",
   as: "user",
+})
+
+// Quiz <-> QuizResult -------------------------------
+QuizModel.hasMany(QuizResultModel, {
+  foreignKey: "quizId",
+  as: "results",
 })
 
 // QuizResult <-> Quiz -------------------------------
