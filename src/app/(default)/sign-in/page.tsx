@@ -41,8 +41,8 @@ export default function SignInForm() {
                     width={70}
                     height={70}
                     className="mx-auto pb-4 animate-pulse"
-                    unoptimized
                     draggable={false}
+                    priority
                 />
                 <form onSubmit={handleSubmit(handleSignIn)}>
                     <ErrorMessage message={error} />

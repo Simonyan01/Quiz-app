@@ -15,9 +15,9 @@ export const POST = async (req: NextRequest) => {
     const isCorrect = question.correctAnswer === selectedAnswer
     const responseData = {
       isCorrect,
-      correctAnswer: isCorrect ? undefined : question.correctAnswer
+      correctAnswer: isCorrect ? undefined : question.correctAnswer,
     }
-    
+
     return Response.json(responseData)
   } catch (err) {
     const errRes = err as Error

@@ -1,34 +1,67 @@
 "use client"
 
+import { UnavailableMessage } from "@/_components/UI/UnavailableMessage"
 import { ScrollButton } from "@/_components/common/ScrollButton"
 import { useHttpQuery } from "@/_helpers/hooks/useHttp"
 import { Layout } from "@/_components/layout/Layout"
 import { Loader } from "@/_components/UI/Loader"
 import { IQuiz } from "@/_helpers/types/types"
+import { FaCheckCircle } from "react-icons/fa"
+import { useRouter } from "next/navigation"
 import { useRef } from "react"
+import Image from "next/image"
 
 export default function Quizzes() {
-    const contentRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
+    const contentRef = useRef<HTMLElement>(null)
     const { data: quizzes = [], loading } = useHttpQuery<IQuiz[]>("/api/quizzes")
+
+    const handleRedirect = (id: number) => {
+        router.push(`/user/quizzes/${id}`)
+    }
 
     return (
         <Layout>
-            {loading && <Loader isLoading={loading} />}
-            <section className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200 p-6" ref={contentRef}>
+            <section className="min-h-screen flex items-center pb-10 justify-center bg-gray-900 text-gray-200 p-6" ref={contentRef}>
+                <Loader isLoading={loading} />
                 <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
-                    <h2 className="text-3xl font-bold text-amber-400 text-center mb-6">Quizzes</h2>
-                    {!quizzes ? (
-                        <p className="text-gray-400 text-center">No quizzes available 🚀</p>
+                    <h2 className="text-5xl font-bold tracking-wide bg-gradient-to-bl from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent text-center mb-5">
+                        Quizzes
+                    </h2>
+                    {!quizzes || quizzes.length === 0 ? (
+                        <UnavailableMessage
+                            message="No quizzes available"
+                            additionalMessage="for new quizzes"
+                        />
                     ) : (
-                        <ul className="space-y-4">
-                            {quizzes.map(({ id, title, description }) => (
-                                <li key={id} className="p-4 bg-gray-700 rounded-lg flex justify-between items-center">
-                                    <div>
-                                        <h3 className="text-xl font-semibold text-white">{title}</h3>
-                                        <p className="text-gray-400">{description}</p>
-                                    </div>
-                                    <div className="flex gap-4">
-
+                        <ul className="space-y-6">
+                            {quizzes.map(({ id, title, description, image, passed }) => (
+                                <li
+                                    key={id}
+                                    onClick={() => handleRedirect(id)}
+                                    className="group flex items-center w-full p-4 bg-gray-700 rounded-2xl shadow-md cursor-pointer transition duration-300 hover:scale-105"
+                                >
+                                    {image && (
+                                        <div className="w-48 h-32 flex-shrink-0 overflow-hidden rounded-xl mr-8 shadow-md">
+                                            <Image
+                                                src={`/uploads/quizzes/${image}`}
+                                                alt="Quiz preview"
+                                                width={192}
+                                                height={128}
+                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                                draggable={false}
+                                                priority
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex-1">
+                                        <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                                            {title}
+                                            {passed && (
+                                                <FaCheckCircle className="text-green-400" title="Passed quiz" />
+                                            )}
+                                        </h3>
+                                        <p className="text-lg text-gray-300">{description}</p>
                                     </div>
                                 </li>
                             ))}
@@ -36,7 +69,7 @@ export default function Quizzes() {
                     )}
                 </div>
             </section>
-            <ScrollButton targetRef={contentRef} />
+            <ScrollButton />
         </Layout>
     )
 }

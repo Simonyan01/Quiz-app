@@ -18,9 +18,11 @@ export const notify = (type: string, message: string) => {
       color: "#ffffff",
       fontSize: "18px",
       borderRadius: "8px",
-      padding: "16px",
+      padding: "10px 18px",
       letterSpacing: "1px",
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      width: "100%",
+      maxWidth: "350px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     },
   })
 }

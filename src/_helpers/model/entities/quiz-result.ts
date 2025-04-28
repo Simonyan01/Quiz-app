@@ -8,6 +8,7 @@ class QuizResult extends Model implements IQuizResult {
   userId!: number
   quizId!: number
   score!: number
+  passed!: boolean
   completedAt!: Date
 }
 
@@ -22,6 +23,10 @@ QuizResult.init(
     quizId: DataTypes.INTEGER,
     score: DataTypes.INTEGER,
     completedAt: DataTypes.DATE,
+    passed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     modelName: "QuizResult",

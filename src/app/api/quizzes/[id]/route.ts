@@ -65,8 +65,8 @@ export const POST = async (req: NextRequest) => {
     for (const answer of answers) {
       const question = quiz.questions.find((q) => q.id === answer.id)
 
-      if (question && question.correctAnswer === answer.selectedAnswer) {
-        score++
+      if (question && question.correctAnswer.trim() === answer.selectedAnswer) {
+        score += 100
         correctAnswers.push({
           id: answer.id,
           selectedAnswer: answer.selectedAnswer,
@@ -74,10 +74,12 @@ export const POST = async (req: NextRequest) => {
       }
     }
 
+    const passed = score > 99
     const result = await QuizResultModel.create({
       userId,
       quizId,
       score,
+      passed,
       completedAt: completedAt || new Date(),
     })
 
@@ -88,6 +90,7 @@ export const POST = async (req: NextRequest) => {
           score,
           totalQuestions: quiz.questions.length,
           correctAnswers,
+          passed,
           completedAt: result.completedAt,
         },
       },
@@ -149,7 +152,7 @@ export const PUT = async (req: NextRequest, context: { params: Params }) => {
     quiz.image = quizImagePath as File | null
     await quiz.save()
 
-    // await QuestionModel.destroy({ where: { quizId: quiz.id } })
+    await QuestionModel.destroy({ where: { quizId: quiz.id } })
 
     const questions: any[] = []
     let idx = 0
@@ -188,8 +191,7 @@ export const PUT = async (req: NextRequest, context: { params: Params }) => {
 export const DELETE = async (req: NextRequest, context: { params: Params }) => {
   try {
     const params = await context.params
-    const id = params.id
-    const quiz = await QuizModel.findByPk(id)
+    const quiz = await QuizModel.findByPk(params.id)
 
     if (!quiz) {
       return Response.json({ message: "Quiz not found" }, { status: 404 })

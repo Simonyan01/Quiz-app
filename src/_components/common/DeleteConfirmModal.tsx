@@ -20,13 +20,12 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    bgcolor: '#1e1e1e',
+    bgcolor: '#1E2939',
     borderRadius: '16px',
     border: '1px solid #444',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
     width: 350,
     p: 2,
-    color: '#fff',
+    color: '#fff'
 }
 
 
@@ -45,8 +44,8 @@ export const DeleteConfirmModal = ({
             slots={{ backdrop: Backdrop }}
             slotProps={{
                 backdrop: {
-                    timeout: 500,
-                },
+                    timeout: 100
+                }
             }}
         >
             <Fade in={open}>
@@ -66,10 +65,13 @@ export const DeleteConfirmModal = ({
                                 borderRadius: '8px',
                                 borderColor: '#555',
                                 color: '#ccc',
+                                letterSpacing: 1,
                                 '&:hover': {
                                     borderColor: '#777',
-                                    backgroundColor: '#2a2a2a',
-                                },
+                                    backgroundColor: '#ccc',
+                                    color: "#1E2939",
+                                    fontWeight: "bold"
+                                }
                             }}
                         >
                             Cancel
@@ -78,13 +80,13 @@ export const DeleteConfirmModal = ({
                             onClick={onConfirm}
                             variant="contained"
                             color="error"
-                            sx={{ borderRadius: '8px' }}
+                            sx={{ borderRadius: '8px', letterSpacing: 1 }}
                         >
                             Delete
                         </Button>
                     </Box>
                 </Box>
             </Fade>
-        </Modal >
+        </Modal>
     )
 }

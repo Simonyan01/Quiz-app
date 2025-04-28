@@ -10,9 +10,10 @@ export interface IUser {
   name: string
   surname: string
   login: string
-  password: string
+  password?: string
   role: Role
-  image: string
+  image: string | null
+  achievements?: string[]
 }
 
 export interface IQuiz {
@@ -21,6 +22,7 @@ export interface IQuiz {
   createdBy: number
   description: string
   image: File | string | null
+  passed: boolean
   questions?: IQuestion[]
 }
 
@@ -44,6 +46,7 @@ export interface IQuizResult {
   userId: number
   quizId: number | string
   score?: number
+  passed?: boolean
   answers?: QuizAnswer[]
   completedAt: Date | string
 }
@@ -75,5 +78,4 @@ export type Mutation<T, V = undefined> = [
   error: string,
   loading: boolean | null,
   data: T | null,
-  (url: string) => void,
 ]

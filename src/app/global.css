@@ -25,7 +25,3 @@ body {
   -webkit-user-select: none;
   user-select: none;
 }
-
-.animate-bounce {
-  animation: bounce 1.2s ease-in-out infinite;
-}

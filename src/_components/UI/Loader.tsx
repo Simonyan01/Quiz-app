@@ -1,31 +1,16 @@
 "use client"
 
 import CircularProgress from "@mui/material/CircularProgress"
-import { Box } from "@mui/material"
-import { memo } from "react"
 
 interface LoaderProps {
     isLoading: boolean | null
 }
 
-export const Loader = memo(({ isLoading }: LoaderProps) => {
+export const Loader = ({ isLoading }: LoaderProps) => {
     if (!isLoading) return null
 
     return (
-        <Box
-            sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                zIndex: 9999
-            }}
-        >
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black/50 z-[9999]">
             <svg width={0} height={0}>
                 <defs>
                     <linearGradient id="my_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -37,11 +22,10 @@ export const Loader = memo(({ isLoading }: LoaderProps) => {
             </svg>
             <CircularProgress
                 size={55}
-                thickness={4}
                 sx={{ 'svg circle': { stroke: 'url(#my_gradient)' } }}
             />
-        </Box>
+        </div>
     )
-})
+}
 
 Loader.displayName = "Loader"

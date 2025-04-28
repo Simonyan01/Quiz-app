@@ -1,12 +1,12 @@
 "use client"
 
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
-import useImageUpload from "@/_helpers/hooks/useImageUpload"
-import { AdminActions } from "@/_components/admin/Actions"
+import { useImageUpload } from "@/_helpers/hooks/useImageUpload"
+import { AddUserForm } from "@/_components/admin/AddUserForm"
 import { ImagePicker } from "@/_components/UI/ImagePicker"
-import AddUserForm from "@/_components/admin/AddUserForm"
-import { Logout } from "@/_components/admin/LogoutButton"
+import { Logout } from "@/_components/common/LogoutButton"
 import { IUser, METHODS } from "@/_helpers/types/types"
+import { Actions } from "@/_components/admin/Actions"
 import { Layout } from "@/_components/layout/Layout"
 import { defaultAvatar } from "@/_helpers/constants"
 import { Loader } from "@/_components/UI/Loader"
@@ -24,8 +24,11 @@ export default function AdminDashboard() {
     const [selectedImage, setSelectedImage] = useState<File | null>(null)
 
     const [handleImageSubmit] = useImageUpload()
-    const [createUser] = useHttpMutation<any, IUser>()
-    const [logout] = useHttpMutation(() => router.push("/sign-in"))
+    const [logout, e_1, isLoggedOut] = useHttpMutation(() => router.push("/sign-in"))
+    const [createUser, error, isValid] = useHttpMutation<any, IUser>(() => {
+        notify("success", "User created successfully!")
+        setIsFormOpen(false)
+    })
 
     const { data, loading, refetch } = useHttpQuery<IUser>("/api/auth")
     const { id, name, surname, image } = data ?? {}
@@ -43,19 +46,17 @@ export default function AdminDashboard() {
         }
     }
 
-    const handleSubmitProfile = () => {
+    const handleSubmitProfile = async () => {
         if (selectedImage) {
-            handleImageSubmit(selectedImage, id)
+            await handleImageSubmit(selectedImage, id)
             setIsModalOpen(false)
-            setTimeout(refetch, 500)
+            refetch()
         }
     }
 
     const handleUserFormSubmit = async (formData: IUser) => {
         try {
             await createUser("/api/users", METHODS.POST, formData)
-            notify("success", "User created successfully!")
-            setIsFormOpen(false)
         } catch (err) {
             notify("error", "Something went wrong. Please try again!");
             console.error(`Error adding user:${err}`)
@@ -65,7 +66,7 @@ export default function AdminDashboard() {
     return (
         <Layout>
             <section className="min-h-screen flex items-center justify-center px-6 bg-gray-900 text-gray-200">
-                {loading && <Loader isLoading={loading} />}
+                <Loader isLoading={loading || isValid || isLoggedOut} />
                 <ToastContainer />
                 <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-xl border border-gray-600">
                     <div className="flex items-center gap-12">
@@ -88,8 +89,9 @@ export default function AdminDashboard() {
                             </div>
                         )}
                     </div>
-                    <AdminActions onAddUser={() => setIsFormOpen(true)} />
+                    <Actions onAddUser={() => setIsFormOpen(true)} />
                     <AddUserForm
+                        error={error}
                         isOpen={isFormOpen}
                         onClose={() => setIsFormOpen(false)}
                         onFormSubmit={handleUserFormSubmit}
@@ -104,7 +106,7 @@ export default function AdminDashboard() {
                 </div>
             </section>
             <ImagePicker
-                image={image}
+                image={image!}
                 isOpen={isModalOpen}
                 setOpen={setIsModalOpen}
                 defaultAvatar={defaultAvatar}

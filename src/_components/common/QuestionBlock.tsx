@@ -16,20 +16,19 @@ interface QuestionBlockProps {
     fieldsLength: number
 }
 
-export const QuestionBlock = ({
-    idx, field, watch, register, setValue,
-    questions, append, remove, fieldsLength
-}: QuestionBlockProps) => {
+export const scrollToEnd = () => {
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    })
+}
+
+export const QuestionBlock = ({ idx, field, watch, register, setValue, questions, append, remove, fieldsLength }: QuestionBlockProps) => {
     const handleDublicate = () => {
         append({ ...watch(`questions.${idx}`) })
-        setTimeout(() => {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: "smooth"
-            })
-        }, 300)
+        setTimeout(scrollToEnd, 300)
     }
-    
+
     return (
         <div key={field.id} className="p-4 border border-gray-600 rounded-lg">
             <label className="block mb-1">Question {idx + 1}</label>

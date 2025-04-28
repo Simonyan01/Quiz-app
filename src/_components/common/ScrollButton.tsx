@@ -1,46 +1,41 @@
 "use client"
 
 import { BsArrowDown, BsArrowUp } from 'react-icons/bs'
-import { RefObject, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-interface IRefProps {
-    targetRef: RefObject<HTMLElement | null>
-}
-
-export const ScrollButton = ({ targetRef }: IRefProps) => {
+export const ScrollButton = () => {
     const [scrollDown, setScrollDown] = useState(true)
     const [isVisible, setIsVisible] = useState(false)
 
     const handleClick = () => {
-        if (!targetRef.current) return
-
-        if (scrollDown) {
-            scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })
-        } else {
-            scrollTo({ top: 0, behavior: "smooth" })
-        }
+        window.scrollTo({
+            top: scrollDown ? document.body.scrollHeight : 0,
+            behavior: "smooth",
+        })
     }
 
     useEffect(() => {
         const handleScroll = () => {
-            if (!targetRef.current) return
+            const scrollTop = window.scrollY
+            const windowHeight = window.innerHeight
+            const fullHeight = document.documentElement.scrollHeight
 
-            const isAtBottom = innerHeight + scrollY >= document.body.scrollHeight
-            const isScrollable = document.documentElement.scrollHeight > innerHeight
+            const isAtBottom = scrollTop + windowHeight >= fullHeight - 10
+            const isScrollable = fullHeight > windowHeight
 
             setScrollDown(!isAtBottom)
             setIsVisible(isScrollable)
         }
 
         const throttledScroll = () => requestAnimationFrame(handleScroll)
+
         addEventListener("scroll", throttledScroll)
         handleScroll()
 
         return () => removeEventListener("scroll", throttledScroll)
-    }, [targetRef])
-
+    }, [])
     return (
-        isVisible ? (
+        isVisible && (
             <button
                 type="button"
                 onClick={handleClick}
@@ -50,6 +45,6 @@ export const ScrollButton = ({ targetRef }: IRefProps) => {
                     {scrollDown ? <BsArrowUp size={24} /> : <BsArrowDown size={24} />}
                 </div>
             </button>
-        ) : null
+        )
     )
 }

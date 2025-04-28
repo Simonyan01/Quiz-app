@@ -1,12 +1,8 @@
 import { METHODS } from "@/_helpers/types/types"
 import { useHttpMutation } from "./useHttp"
 
-const useImageUpload = () => {
-  const onSuccess = (data: any) => {
-    console.log("Upload successful:", data)
-  }
-
-  const [uploadImage, error, loading, uploadedData] = useHttpMutation<any, FormData>(onSuccess)
+export const useImageUpload = () => {
+  const [uploadImage, error, loading, uploadedData] = useHttpMutation<any, FormData>()
 
   const handleImageSubmit = async (image: File, id: string) => {
     const formData = new FormData()
@@ -18,5 +14,3 @@ const useImageUpload = () => {
 
   return [handleImageSubmit, loading, error, uploadedData]
 }
-
-export default useImageUpload

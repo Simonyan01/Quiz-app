@@ -22,11 +22,11 @@ export const POST = async (req: Request) => {
       )
     }
 
-    if (!password.trim()) {
+    if (!password!.trim()) {
       return Response.json({ message: "Password is required" }, { status: 400 })
     }
 
-    if (!pwdRegExp.test(password)) {
+    if (!pwdRegExp.test(password!)) {
       return Response.json(
         {
           message: `Your password must be at least 8 characters long and include at least one uppercase letter, 
@@ -45,7 +45,7 @@ export const POST = async (req: Request) => {
       return Response.json({ message: "Username is already in use" }, { status: 400 })
     }
 
-    const hashedPwd = await bcrypt.hash(password, 10)
+    const hashedPwd = await bcrypt.hash(password!, 10)
     const newUser = await UserModel.create({ login, password: hashedPwd, ...rest })
 
     return Response.json({ message: "User successfully created", user: newUser }, { status: 201 })

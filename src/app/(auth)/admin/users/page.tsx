@@ -5,9 +5,12 @@ import { Layout } from "@/_components/layout/Layout"
 import { defaultAvatar } from "@/_helpers/constants"
 import { Loader } from "@/_components/UI/Loader"
 import { IUser } from "@/_helpers/types/types"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function Users() {
+    const router = useRouter()
     const { data: users, loading, error } = useHttpQuery<IUser[]>("/api/users")
 
     const renderError = error && (
@@ -27,19 +30,20 @@ export default function Users() {
     )
 
     const renderUsers = users?.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md-grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md-grid-cols-3 lg:grid-cols-4 gap-8 cursor-pointer">
             {users.map(({ id, login, role, image }) => {
                 const imageUrl = image ? `/uploads/${image}` : defaultAvatar
                 return (
-                    <div
+                    <Link
                         key={id}
-                        className="bg-gray-800 rounded-xl shadow-lg p-5 hover:shadow-xl hover:shadow-indigo-300 transition-all duration-200 transform hover:-translate-y-2 min-w-max text-center"
+                        href={`/admin/users/${id}`}
+                        className="bg-gray-800 rounded-xl shadow-lg p-5 hover:shadow-xl hover:shadow-indigo-300 transition-all duration-200 hover:-translate-y-2 min-w-max text-center"
                     >
                         <Image
                             src={imageUrl}
                             alt={`${login}'s avatar`}
                             draggable={false}
-                            className="size-20 rounded-full mx-auto mb-4 border-4 shadow-lg bg-gradient-to-r from-[#f93b15] via-[#f09819] to-[#f93b15]"
+                            className="size-30 rounded-full mx-auto mb-4 border-4 shadow-lg bg-gradient-to-r from-[#f93b15] via-[#f09819] to-[#f93b15]"
                             width={150}
                             height={150}
                             priority
@@ -48,7 +52,7 @@ export default function Users() {
                         <p className={`mt-2 text-lg font-medium tracking-wide ${role === "admin" ? "text-red-400" : "text-green-400"}`}>
                             {role.toUpperCase()}
                         </p>
-                    </div>
+                    </Link>
                 )
             })}
         </div>

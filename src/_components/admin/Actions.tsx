@@ -6,29 +6,28 @@ interface IButtonProps {
     onAddUser: () => void
 }
 
-export const AdminActions = ({ onAddUser }: IButtonProps) => {
+export const Actions = ({ onAddUser }: IButtonProps) => {
     const router = useRouter()
+    const buttons = [
+        { label: "Manage users", href: "/admin/manage-users", color: "indigo" },
+        { label: "Statistics", href: "/admin/quiz-results", color: "indigo" },
+        { label: "Add user", onClick: onAddUser, color: "green" },
+        { label: "Add quiz", href: "/admin/quizzes/add", color: "green" },
+        { label: "Users", href: "/admin/users", color: "green" },
+        { label: "Quizzes", href: "/admin/quizzes", color: "green" },
+    ]
 
     return (
-        <div className="grid grid-cols-3 gap-4 mt-6 tracking-wide">
-            <button
-                type="button"
-                onClick={() => router.push("/admin/manage-users")}
-                className="bg-indigo-600 p-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 cursor-pointer hover:scale-105">
-                Manage users
-            </button>
-            <button
-                type="button"
-                onClick={onAddUser}
-                className="bg-green-600 p-2 rounded-lg hover:bg-green-700 transition-all duration-300 cursor-pointer hover:scale-105">
-                Add user
-            </button>
-            <button
-                type="button"
-                onClick={() => router.push("/admin/quizzes/add")}
-                className="bg-green-600 p-2 rounded-lg hover:bg-green-700 transition-all duration-300 cursor-pointer hover:scale-105">
-                Add quiz
-            </button>
+        <div className="grid grid-cols-2 gap-4 mt-6 tracking-wide">
+            {buttons.map(({ label, href, onClick, color }) => (
+                <button
+                    key={label}
+                    type="button"
+                    onClick={onClick ?? (() => router.push(href))}
+                    className={`bg-${color}-600 p-2 rounded-lg hover:bg-${color}-700 transition-all duration-300 cursor-pointer hover:scale-105`}>
+                    {label}
+                </button>
+            ))}
         </div>
     )
 }

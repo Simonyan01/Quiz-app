@@ -64,8 +64,7 @@ export const POST = async (req: NextRequest) => {
     delete userWithoutPwd.password
 
     return Response.json({ message: "Changes saved successfully", user: userWithoutPwd }, { status: 200 })
-  } catch (error) {
-    console.error(error)
+  } catch {
     return Response.json({ message: "Internal server error" }, { status: 500 })
   }
 }

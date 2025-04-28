@@ -16,7 +16,6 @@ export default function HomePage() {
         addEventListener("resize", handleResize)
         return () => removeEventListener("resize", handleResize)
     }, [])
-
     return (
         <section className="relative min-h-screen bg-gray-900 text-gray-200 flex flex-col items-center justify-center mx-auto">
             <motion.div

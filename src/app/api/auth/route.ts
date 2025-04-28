@@ -1,7 +1,7 @@
 import "@/_helpers/config/associations"
 
 import { UserModel } from "@/_helpers/model/entities/user"
-import { syncDatabase } from "@/_helpers/model/utils/sync"
+import { syncDatabase } from "@/_helpers/model/sync"
 import { NextRequest } from "next/server"
 import jwt from "jsonwebtoken"
 

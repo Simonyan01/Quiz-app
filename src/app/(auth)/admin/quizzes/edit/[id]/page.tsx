@@ -3,14 +3,14 @@
 import { useHttpQuery } from '@/_helpers/hooks/useHttp'
 import { IQuiz } from '@/_helpers/types/types'
 import { useParams } from 'next/navigation'
-import QuizForm from '../../add/page'
+import AddQuizForm from '../../add/page'
 
-export default function EditQuiz() {
+export default function EditQuizForm() {
     const { id } = useParams()
     const { data: quiz, loading } = useHttpQuery<IQuiz>(`/api/quizzes/${id}`)
 
     return (
-        <QuizForm
+        <AddQuizForm
             mode="edit"
             loading={loading}
             initialData={quiz}

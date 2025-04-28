@@ -1,16 +1,16 @@
 "use client"
 
+import { QuestionBlock, scrollToEnd } from "@/_components/common/QuestionBlock"
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
 import { useForm, useFieldArray, useWatch } from "react-hook-form"
-import { QuestionBlock } from "@/_components/common/QuestionBlock"
 import { ScrollButton } from "@/_components/common/ScrollButton"
 import { IQuiz, IUser, METHODS } from "@/_helpers/types/types"
 import { Layout } from "@/_components/layout/Layout"
+import { useEffect, useRef, useState } from "react"
 import { Loader } from "@/_components/UI/Loader"
 import { notify } from "@/_helpers/hooks/notify"
 import { ToastContainer } from "react-toastify"
 import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useRef } from "react"
 import Image from "next/image"
 
 interface IEditQuizProps {
@@ -20,30 +20,21 @@ interface IEditQuizProps {
     quizId: number
 }
 
-export default function QuizForm({ mode, loading, initialData, quizId }: IEditQuizProps) {
+export default function AddQuizForm({ mode, loading, initialData, quizId }: IEditQuizProps) {
     const router = useRouter()
-    const contentRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef(null)
+    const [previewImageSrc, setPreviewImageSrc] = useState<string | null>(null)
     const { register, handleSubmit, control, watch, setValue, reset, formState: { errors } } = useForm<IQuiz>()
 
+    const isEdit = mode === "edit"
     const { title, description, questions = [] } = errors
     const quizImage = useWatch({ control, name: "image" })
-    const imageSrc: string | null = useMemo(() => {
-        if (quizImage instanceof File) {
-            return URL.createObjectURL(quizImage)
-        } else if (typeof quizImage === "string") {
-            return `/uploads/quizzes/${quizImage}`
-        }
-        return null
-    }, [quizImage])
+    const { fields, append, remove } = useFieldArray({ control, name: "questions" })
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "questions",
-    })
-
-    const [createOrUpdate, e1, isSubmitting] = useHttpMutation<any, FormData>()
     const { data } = useHttpQuery<IUser>("/api/auth")
     const userId = data?.id
+
+    const [createOrUpdate, e1, isSubmitting] = useHttpMutation<any, FormData>()
 
     const onSubmit = async (form: IQuiz) => {
         const formData = new FormData()
@@ -55,12 +46,12 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
         if (form.image) {
             formData.append("image", form.image)
         } else {
-            notify("error", "Please upload an image for the quiz !")
+            notify("error", "Please upload an image for the quiz!")
             return
         }
 
-        if (!form.questions || form.questions.length <= 10) {
-            notify("error", "Please add at least one question to the quiz !!!")
+        if (!form.questions || form.questions.length < 15) {
+            notify("error", "Please add a minimum of 15 questions to create the quiz!!!")
             return
         }
 
@@ -72,45 +63,59 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
             formData.append(`questions[${idx}][correctAnswer]`, q.correctAnswer)
         })
 
-        const isEdit = Boolean(initialData)
         const url = isEdit ? `/api/quizzes/${quizId}` : "/api/quizzes"
         const method = isEdit ? METHODS.PUT : METHODS.POST
 
         try {
             await createOrUpdate(url, method, formData)
-            notify("success", `Quiz successfully ${isEdit ? "updated" : "added"}!`)
+            notify("success", `Quiz successfully ${isEdit ? "updated" : "added"}. Redirecting to quiz list.`)
             setTimeout(() => router.push("/admin/quizzes"), 2500)
         } catch {
             notify("error", `Failed to ${isEdit ? "update" : "add"} quiz!`)
         }
     }
 
-    // useEffect(() => {
-    //     return () => {
-    //         if (quizImage instanceof File && imageSrc) {
-    //             URL.revokeObjectURL(imageSrc)
-    //         }
-    //     }
-    // }, [quizImage, imageSrc])
+    const handleAdd = () => {
+        append({
+            question: "",
+            answers: ["", "", "", ""],
+            correctAnswer: ""
+        })
+        setTimeout(scrollToEnd, 300)
+    }
 
+    useEffect(() => {
+        if (quizImage instanceof File) {
+            const objectUrl = URL.createObjectURL(quizImage)
+            setPreviewImageSrc(objectUrl)
+
+            return () => {
+                URL.revokeObjectURL(objectUrl)
+                setPreviewImageSrc(null)
+            }
+        } else if (typeof quizImage === "string") {
+            setPreviewImageSrc(`/uploads/quizzes/${quizImage}`)
+        } else {
+            setPreviewImageSrc(null)
+        }
+    }, [quizImage])
 
     useEffect(() => {
         if (initialData) {
             reset(initialData)
         }
-    }, [initialData, reset])
-
+    }, [initialData])
     return (
         <Layout>
             <ToastContainer />
             <Loader isLoading={isSubmitting || loading} />
             <section className="max-w-4xl mx-auto bg-gray-800 text-white p-6 m-12 rounded-lg shadow-lg tracking-wider" ref={contentRef}>
                 <h2 className="text-3xl font-bold mb-3 text-center">
-                    {mode === "edit" ? "Update Quiz" : "Create Quiz"}
+                    {isEdit ? "Update Quiz" : "Create Quiz"}
                 </h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                        <label className="block mb-1"> Title <wbr />
+                        <label className="block mb-1">Title <wbr />
                             <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -121,7 +126,9 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
                         {title && <p className="text-red-500 pt-2">{title.message}</p>}
                     </div>
                     <div>
-                        <label className="block mb-1">Description</label>
+                        <label className="block mb-1">Description <wbr />
+                            <span className="text-red-500">*</span>
+                        </label>
                         <textarea
                             {...register("description", { required: "Description is required." })}
                             className="w-full p-2 rounded bg-gray-700 border transition-all border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -130,10 +137,20 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
                         {description && <p className="text-red-500">{description.message}</p>}
                     </div>
                     <div>
+                        <label
+                            htmlFor="quizImage"
+                            className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm transition-all font-semibold py-2 px-4 rounded-lg cursor-pointer"
+                        >
+                            {quizImage instanceof File ? quizImage.name
+                                : typeof quizImage === "string" ? quizImage
+                                    : "Choose image"
+                            }
+                        </label>
                         <input
+                            id="quizImage"
                             type="file"
                             accept="image/*"
-                            className="min-w-max text-sm cursor-pointer file:cursor-pointer text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500"
+                            className="hidden"
                             onChange={(e) => {
                                 const file = e.target.files?.[0]
                                 if (file) {
@@ -141,13 +158,14 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
                                 }
                             }}
                         />
-                        {imageSrc && (
+                        {previewImageSrc && (
                             <Image
-                                src={imageSrc}
+                                src={previewImageSrc}
                                 alt="Quiz image"
-                                width={300}
+                                width={280}
                                 height={200}
                                 className="mt-4 rounded-xl border border-blue-400 shadow-xs"
+                                draggable={false}
                                 priority
                             />
                         )}
@@ -169,24 +187,20 @@ export default function QuizForm({ mode, loading, initialData, quizId }: IEditQu
                     ))}
                     <button
                         type="button"
-                        className="w-full bg-blue-600 hover:bg-blue-500 cursor-pointer transition-all p-2 rounded text-white"
-                        onClick={() => append({
-                            question: "",
-                            answers: ["", "", "", ""],
-                            correctAnswer: ""
-                        })}
+                        className="w-full bg-blue-600 hover:bg-blue-500 cursor-pointer transition-all p-2 rounded-lg text-white"
+                        onClick={handleAdd}
                     >
                         {fields.length === 0 ? "Add question" : "Add another question"}
                     </button>
                     <button
                         type="submit"
-                        className="w-full bg-green-600 cursor-pointer hover:bg-green-500  transition-all p-2 rounded text-white"
+                        className="w-full bg-green-600 cursor-pointer hover:bg-green-500  transition-all p-2 rounded-lg text-white"
                     >
-                        {mode === "edit" ? "Update Quiz" : "Create Quiz"}
+                        {isEdit ? "Update Quiz" : "Create Quiz"}
                     </button>
                 </form>
             </section>
-            <ScrollButton targetRef={contentRef} />
-        </Layout >
+            <ScrollButton />
+        </Layout>
     )
 }

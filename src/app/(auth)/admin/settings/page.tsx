@@ -42,7 +42,7 @@ export default function Settings() {
         <Layout>
             <ToastContainer />
             <section className="flex justify-center items-center min-h-screen bg-gray-900">
-                {loading && <Loader isLoading={loading} />}
+                <Loader isLoading={loading} />
                 <div className="bg-gray-800 p-8 rounded-xl shadow-lg max-w-sm w-full tracking-wide border border-gray-700">
                     <h2 className={`text-3xl font-semibold text-center text-gray-200 ${error ? "mb-6" : "mb-4"}`}>General security</h2>
                     <ErrorMessage message={error} />
@@ -54,7 +54,7 @@ export default function Settings() {
                             <input
                                 type="password"
                                 id="old-password"
-                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none transition-all duration-200 focus:ring-2 focus:ring-indigo-500"
+                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500"
                                 {...register('oldPassword', { required: 'Old password is required' })}
                             />
                             {errors.oldPassword && <p className="text-orange-600 mt-2">{errors.oldPassword.message}</p>}
@@ -63,7 +63,7 @@ export default function Settings() {
                             <label className="block text-gray-400 mb-2" htmlFor="new-login">New Login</label>
                             <input
                                 id="new-login"
-                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 {...register('newLogin', {
                                     minLength: { value: 3, message: "Username must be at least 3 characters long" },
                                     maxLength: { value: 20, message: "Username must not exceed 20 characters" },
@@ -82,7 +82,7 @@ export default function Settings() {
                             <input
                                 type="password"
                                 id="new-password"
-                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none transition-all focus:ring-2 focus:ring-indigo-500"
+                                className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-indigo-500"
                                 {...register('newPassword', { required: 'New password is required' })}
                             />
                             {errors.newPassword && <p className="text-orange-600 mt-2">{errors.newPassword.message}</p>}

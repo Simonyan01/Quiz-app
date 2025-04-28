@@ -10,23 +10,22 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
   const [error, setError] = useState<string>("")
   const router = useRouter()
 
-  const refetch = () => {
+  const refetch = async () => {
     setLoading(true)
 
-    http
-      .get(url)
-      .then((res) => {
-        setData(res.data)
-      })
-      .catch((err) => {
-        if (err.response?.status === 403) {
-          router.push("/sign-in")
-        }
-        setError(err.message)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+    try {
+      const res = await http.get(url)
+      setData(res.data)
+    } catch (err) {
+      const errRes = err as AxiosError
+      if (errRes.response?.status === 403) {
+        router.push("/sign-in")
+      }
+
+      setError(errRes.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -45,9 +44,7 @@ export const useHttpQuery = <ReturnType>(url: string, mount: boolean = true): IQ
   }
 }
 
-// ------------------------------------------------------------------------------------------------
-
-const cache: Record<string, any> = {}
+// ----------------------------------------------------------------------------------------------------
 
 export const useHttpMutation = <ReturnType, PayloadType = null>(
   onSuccess?: (data?: ReturnType) => void,
@@ -55,10 +52,6 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
   const [data, setData] = useState<ReturnType | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>("")
-
-  const invalidateCache = (url: string) => {
-    delete cache[url]
-  }
 
   const make = async (url: string, method: METHODS = METHODS.POST, payload?: PayloadType) => {
     let invocation: Promise<any>
@@ -80,7 +73,6 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
           break
         case METHODS.DELETE:
           invocation = http.delete(url)
-          invalidateCache(url)
           break
         default:
           throw new Error("Unsupported HTTP method")
@@ -89,10 +81,6 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
       const response = await invocation
       const result = response.data as ReturnType
       setData(result)
-
-      if (method !== METHODS.GET) {
-        cache[url] = response.data
-      }
 
       if (result) {
         onSuccess?.(result)
@@ -108,5 +96,5 @@ export const useHttpMutation = <ReturnType, PayloadType = null>(
     }
   }
 
-  return [make, error, loading, data, () => {}]
+  return [make, error, loading, data]
 }

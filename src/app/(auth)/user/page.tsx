@@ -1,9 +1,9 @@
 "use client"
 
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
-import useImageUpload from "@/_helpers/hooks/useImageUpload"
+import { useImageUpload } from "@/_helpers/hooks/useImageUpload"
 import { ImagePicker } from "@/_components/UI/ImagePicker"
-import { Logout } from "@/_components/admin/LogoutButton"
+import { Logout } from "@/_components/common/LogoutButton"
 import { IUser, METHODS } from "@/_helpers/types/types"
 import { Layout } from "@/_components/layout/Layout"
 import { defaultAvatar } from "@/_helpers/constants"
@@ -20,7 +20,7 @@ export default function UserPage() {
     const [selectedImage, setSelectedImage] = useState<File | null>(null)
 
     const [handleImageSubmit] = useImageUpload()
-    const [logout] = useHttpMutation(() => router.push("/sign-in"))
+    const [logout, e_1, isLoggedOut] = useHttpMutation(() => router.push("/sign-in"))
 
     const { data, loading, refetch } = useHttpQuery<IUser>("/api/auth")
     const { id, name, surname, image } = data ?? {}
@@ -38,18 +38,18 @@ export default function UserPage() {
         }
     }
 
-    const handleSubmitProfile = () => {
+    const handleSubmitProfile = async () => {
         if (selectedImage) {
-            handleImageSubmit(selectedImage, id)
+            await handleImageSubmit(selectedImage, id)
             setIsModalOpen(false)
-            setTimeout(refetch, 500)
+            refetch()
         }
     }
 
     return (
         <Layout>
             <section className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-200">
-                {loading && <Loader isLoading={loading} />}
+                <Loader isLoading={loading || isLoggedOut} />
                 <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-xl border border-gray-600">
                     <div className="flex items-center gap-12">
                         <Image
@@ -82,7 +82,7 @@ export default function UserPage() {
                 </div>
             </section>
             <ImagePicker
-                image={image}
+                image={image!}
                 isOpen={isModalOpen}
                 setOpen={setIsModalOpen}
                 defaultAvatar={defaultAvatar}

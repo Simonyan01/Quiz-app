@@ -11,14 +11,14 @@ export const POST = async (req: NextRequest) => {
   try {
     const { login, password } = (await req.json()) as IUser
 
-    if (!login.trim() || !password.trim()) {
+    if (!login.trim() || !password!.trim()) {
       return Response.json({ message: "Missing credentials!" }, { status: 400 })
     }
 
     const user = await UserModel.findOne({ where: { login } })
     const key = process.env.JWT_SECRET
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(password!, user.password))) {
       return Response.json({ message: "Incorrect login details!" }, { status: 400 })
     }
 

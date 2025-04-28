@@ -1,10 +1,11 @@
+import { ErrorMessage } from "../common/ErrorMessage"
 import { IUser } from "@/_helpers/types/types"
 import { useForm } from "react-hook-form"
-import "@/app/(default)/global.css"
 
 interface FormProps {
     isOpen: boolean
     onClose: () => void
+    error: string | boolean
     onFormSubmit: (formData: IUser) => void
 }
 
@@ -16,7 +17,7 @@ interface Field {
     options?: string[]
 }
 
-const AddUserForm = ({ isOpen, onClose, onFormSubmit }: FormProps) => {
+export const AddUserForm = ({ error, isOpen, onClose, onFormSubmit }: FormProps) => {
     const { register, handleSubmit, formState: { errors } } = useForm<IUser>()
 
     const fields: Field[] = [
@@ -30,8 +31,9 @@ const AddUserForm = ({ isOpen, onClose, onFormSubmit }: FormProps) => {
     return (
         <div className={`modal-overlay ${isOpen ? "open" : ""}`}>
             <div className={`modal-content ${isOpen ? "open" : ""} shadow-xl border border-gray-700 bg-gray-800 text-white rounded-lg`}>
-                <h2 className="text-2xl font-semibold mb-4 text-center">Add New User</h2>
-                <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
+                <h2 className={`text-2xl font-semibold mb-4 ${error && "mb-7"} text-center`}>Add New User</h2>
+                <ErrorMessage message={error} />
+                <form onSubmit={handleSubmit(onFormSubmit)} className={`space-y-5 ${error && "mt-2"}`}>
                     {fields.map(({ name, type = "text", placeholder, options }) => (
                         <div key={name}>
                             {type === "select" ? (
@@ -61,7 +63,7 @@ const AddUserForm = ({ isOpen, onClose, onFormSubmit }: FormProps) => {
                     <div className="flex justify-between items-center">
                         <button
                             type="submit"
-                            className="w-full py-3 bg-green-600 text-white cursor-pointer font-semibold rounded-md hover:bg-green-700 transition duration-300"
+                            className="w-full py-3 bg-green-600 text-white cursor-pointer font-semibold rounded-md hover:bg-green-700 transition duration-200"
                         >
                             Add User
                         </button>
@@ -70,12 +72,10 @@ const AddUserForm = ({ isOpen, onClose, onFormSubmit }: FormProps) => {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="mt-6 w-full py-2 bg-gray-500 text-white rounded-md transition-all cursor-pointer hover:bg-gray-600">
+                    className="mt-5 w-full py-2 bg-gray-500 text-white rounded-md transition-all cursor-pointer hover:bg-gray-600">
                     Close
                 </button>
             </div>
         </div>
     )
 }
-
-export default AddUserForm
