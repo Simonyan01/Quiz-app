@@ -30,7 +30,7 @@ export default function QuizPage() {
     const { data: questions = [], loading } = useHttpQuery<IQuestion[]>(`/api/questions/${quizId}`)
     const [submitQuizResult, e_1, isSubmited] = useHttpMutation<IQuizResult, IQuizResult>(() => {
         notify("success", "Your quiz has been submitted successfully! 🎉")
-        setTimeout(() => router.push("/admin/quizzes"), 2700)
+        setTimeout(() => router.push("/user/quizzes"), 2700)
     })
 
     const totalQuestions = (questions ?? []).length

@@ -41,7 +41,7 @@ export default function Settings() {
     return (
         <Layout>
             <ToastContainer />
-            <section className="flex justify-center items-center min-h-screen bg-gray-900">
+            <section className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                 <Loader isLoading={loading} />
                 <div className="bg-gray-800 p-8 rounded-xl shadow-lg max-w-sm w-full tracking-wide border border-gray-700">
                     <h2 className={`text-3xl font-semibold text-center text-gray-200 ${error ? "mb-6" : "mb-4"}`}>General security</h2>

@@ -26,14 +26,14 @@ export default function SignUpForm() {
     }
 
     return (
-        <section className={`${error ? "pt-10" : "pt-20"} min-h-screen flex items-start justify-center bg-gray-900`}>
+        <section className={`pt-14 min-h-screen flex justify-center items-start bg-gray-900`}>
             {loading && <Loader isLoading={loading} />}
             <div className="bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-600">
                 <div className="text-center pb-4">
                     <p className="text-2xl font-bold mb-1 bg-gradient-to-r from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">
                         Create new account
                     </p>
-                    <p className="font-semibold text-gray-200 tracking-wide">It&apos;s quick and easy</p>
+                    <p className={`font-semibold text-gray-200 tracking-wide ${error && "pb-2"}`}>It&apos;s quick and easy</p>
                 </div>
                 <form onSubmit={handleSubmit(handleSignUp)}>
                     <ErrorMessage message={error} />
@@ -48,6 +48,18 @@ export default function SignUpForm() {
                         placeholder="Enter your last name"
                         register={register("surname", { required: "Please enter your last name" })}
                         error={errors.surname?.message}
+                    />
+                    <InputField
+                        label="Email"
+                        placeholder="Enter your email"
+                        register={register("email", {
+                            required: "Please enter your email",
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: "Please enter a valid email address",
+                            },
+                        })}
+                        error={errors.email?.message}
                     />
                     <InputField
                         label="Username"

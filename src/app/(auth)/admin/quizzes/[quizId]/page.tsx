@@ -108,7 +108,7 @@ export default function QuizPage() {
         <Layout>
             <ToastContainer />
             <Loader isLoading={loading || isCheckingAnswer || isSubmitted} />
-            <section ref={contentRef} className="min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white p-8 flex justify-center items-center">
+            <section ref={contentRef} className="min-h-screen  bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-8 flex justify-center items-center">
                 <div className="max-w-2xl w-full bg-gray-800 p-6 rounded-lg shadow-xl">
                     <h1 className="text-4xl font-bold text-center mb-3 tracking-wide bg-gradient-to-bl from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent">Quiz Time!</h1>
                     {!questions || questions.length === 0 ? (

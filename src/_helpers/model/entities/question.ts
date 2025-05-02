@@ -27,7 +27,6 @@ Question.init(
         model: "quizzes",
         key: "id",
       },
-      onDelete: "CASCADE",
     },
   },
   {

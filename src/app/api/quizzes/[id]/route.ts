@@ -2,6 +2,8 @@ import "@/_helpers/config/associations"
 
 import { QuizResultModel } from "@/_helpers/model/entities/quiz-result"
 import { QuestionModel } from "@/_helpers/model/entities/question"
+import { sendQuizPassedEmail } from "@/_helpers/lib/quizEmail"
+import { UserModel } from "@/_helpers/model/entities/user"
 import { QuizModel } from "@/_helpers/model/entities/quiz"
 import { QuizAnswer } from "@/_helpers/types/types"
 import { NextRequest } from "next/server"
@@ -75,17 +77,41 @@ export const POST = async (req: NextRequest) => {
     }
 
     const passed = score > 99
-    const result = await QuizResultModel.create({
-      userId,
-      quizId,
-      score,
-      passed,
-      completedAt: completedAt || new Date(),
+    let result = await QuizResultModel.findOne({
+      where: { userId, quizId },
     })
+
+    if (result) {
+      result.score = score
+      result.passed = passed
+      result.completedAt = completedAt || new Date()
+      await result.save()
+    } else {
+      result = await QuizResultModel.create({
+        userId,
+        quizId,
+        score,
+        passed,
+        completedAt: completedAt || new Date(),
+      })
+    }
+
+    if (passed) {
+      const user = await UserModel.findByPk(userId)
+      if (user?.email && user?.name && user?.role) {
+        await sendQuizPassedEmail({
+          to: user.email,
+          name: user.name,
+          role: user.role,
+          quizTitle: quiz.title,
+          score,
+        })
+      }
+    }
 
     return Response.json(
       {
-        message: "Quiz result submitted successfully",
+        message: "Quiz result saved successfully",
         result: {
           score,
           totalQuestions: quiz.questions.length,

@@ -18,7 +18,7 @@ export default function QuizResults() {
     return (
         <Layout>
             <section
-                className="min-h-screen flex items-center pb-9 justify-center bg-gray-900 text-gray-200 p-6"
+                className="min-h-screen flex items-center pb-9 justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200 p-6"
                 ref={contentRef}
             >
                 <Loader isLoading={loading} />

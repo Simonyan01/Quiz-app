@@ -5,12 +5,11 @@ import { Layout } from "@/_components/layout/Layout"
 import { defaultAvatar } from "@/_helpers/constants"
 import { Loader } from "@/_components/UI/Loader"
 import { IUser } from "@/_helpers/types/types"
-import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { ScrollButton } from "@/_components/common/ScrollButton"
 
 export default function Users() {
-    const router = useRouter()
     const { data: users, loading, error } = useHttpQuery<IUser[]>("/api/users")
 
     const renderError = error && (
@@ -36,8 +35,8 @@ export default function Users() {
                 return (
                     <Link
                         key={id}
-                        href={`/admin/users/${id}`}
-                        className="bg-gray-800 rounded-xl shadow-lg p-5 hover:shadow-xl hover:shadow-indigo-300 transition-all duration-200 hover:-translate-y-2 min-w-max text-center"
+                        href={`/profile/${id}`}
+                        className="bg-gray-800 rounded-xl tracking-wider shadow-lg p-5 hover:shadow-xl hover:shadow-[#f09819] transition-all duration-300 hover:-translate-y-2 min-w-max text-center"
                     >
                         <Image
                             src={imageUrl}
@@ -61,12 +60,13 @@ export default function Users() {
     return (
         <Layout>
             <Loader isLoading={loading} />
-            <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-10">
-                <h1 className="text-4xl font-bold text-indigo-400 mb-8">Users List</h1>
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col items-center p-10">
+                <h1 className="text-5xl font-bold bg-gradient-to-br from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent mb-12 tracking-wide">Users List</h1>
                 {renderError}
                 {renderNoUsers}
                 {renderUsers}
             </div>
+            <ScrollButton />
         </Layout>
     )
 }

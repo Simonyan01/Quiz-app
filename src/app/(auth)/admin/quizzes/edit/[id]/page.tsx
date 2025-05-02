@@ -1,9 +1,9 @@
 "use client"
 
+import AddQuizForm from '../../_components/AddQuizForm'
 import { useHttpQuery } from '@/_helpers/hooks/useHttp'
 import { IQuiz } from '@/_helpers/types/types'
 import { useParams } from 'next/navigation'
-import AddQuizForm from '../../add/page'
 
 export default function EditQuizForm() {
     const { id } = useParams()

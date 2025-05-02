@@ -17,17 +17,11 @@ export const GET = async (req: NextRequest) => {
       return Response.json({ message: "User not found" }, { status: 404 })
     }
 
-    if (user.role === "user") {
-      const results = await QuizResultModel.findAll({
-        where: { userId },
-      })
+    const results = await QuizResultModel.findAll({
+      where: { userId },
+    })
 
-      return Response.json(results)
-    }
-
-    const allResults = await QuizResultModel.findAll()
-
-    return Response.json(allResults)
+    return Response.json(results)
   } catch {
     return Response.json({ message: "Server error" }, { status: 500 })
   }

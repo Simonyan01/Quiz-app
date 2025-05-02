@@ -5,9 +5,9 @@ import { getMenuItems } from "@/_helpers/router/routes"
 import { IUser, METHODS } from "@/_helpers/types/types"
 import { MdMenuOpen } from "react-icons/md"
 import { useRouter } from "next/navigation"
+import { Loader } from "../UI/Loader"
 import { useState } from 'react'
 import Link from "next/link"
-import { Loader } from "../UI/Loader"
 
 export const Sidebar = () => {
     const router = useRouter()

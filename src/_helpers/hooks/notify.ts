@@ -18,7 +18,7 @@ export const notify = (type: string, message: string) => {
       color: "#ffffff",
       fontSize: "18px",
       borderRadius: "8px",
-      padding: "10px 18px",
+      padding: "10px 19px",
       letterSpacing: "1px",
       width: "100%",
       maxWidth: "350px",

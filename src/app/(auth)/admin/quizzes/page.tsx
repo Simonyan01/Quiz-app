@@ -61,7 +61,7 @@ export default function Quizzes() {
     }, [open])
     return (
         <Layout>
-            <section className="min-h-screen flex items-center pb-10 justify-center bg-gray-900 text-gray-200 p-6" ref={contentRef}>
+            <section className="min-h-screen flex items-center pb-10 justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200 p-6" ref={contentRef}>
                 <Loader isLoading={loading || isRemoved} />
                 <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
                     <h2 className="text-5xl font-bold tracking-wide bg-gradient-to-bl from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent text-center mb-5">

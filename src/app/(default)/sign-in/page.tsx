@@ -17,7 +17,6 @@ export default function SignInForm() {
 
     const onSuccess = (data: any) => {
         const { role } = data.user
-
         role === "admin"
             ? router.push("/admin")
             : router.push("/user")
@@ -40,17 +39,23 @@ export default function SignInForm() {
                     alt="Quiz Icon"
                     width={70}
                     height={70}
-                    className="mx-auto pb-4 animate-pulse"
+                    className={`mx-auto pb-4 animate-pulse ${error && "mb-1"}`}
                     draggable={false}
                     priority
                 />
                 <form onSubmit={handleSubmit(handleSignIn)}>
                     <ErrorMessage message={error} />
                     <InputField
-                        label="Username"
-                        placeholder="Enter your username"
-                        register={register("login")}
-                        error={errors.login?.message}
+                        label="Email"
+                        placeholder="Enter your email"
+                        register={register("email", {
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: "Invalid email address",
+                            },
+                        })}
+                        error={errors.email?.message}
                     />
                     <InputField
                         label="Password"

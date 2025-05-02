@@ -13,7 +13,7 @@ export const Actions = ({ onAddUser }: IButtonProps) => {
         { label: "Statistics", href: "/admin/quiz-results", color: "indigo" },
         { label: "Add user", onClick: onAddUser, color: "green" },
         { label: "Add quiz", href: "/admin/quizzes/add", color: "green" },
-        { label: "Users", href: "/admin/users", color: "green" },
+        { label: "Users", href: "/profile", color: "green" },
         { label: "Quizzes", href: "/admin/quizzes", color: "green" },
     ]
 

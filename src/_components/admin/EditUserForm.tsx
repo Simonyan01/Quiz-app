@@ -26,6 +26,7 @@ export const EditUserForm = ({ error, isOpen, onClose, userData, onFormSubmit }:
     const fields: Field[] = [
         { name: "name", type: "text", placeholder: "Name" },
         { name: "surname", type: "text", placeholder: "Surname" },
+        { name: "email", type: "text", placeholder: "Email" },
         { name: "role", type: "select", options: ["user", "admin"] },
     ]
 
@@ -52,9 +53,17 @@ export const EditUserForm = ({ error, isOpen, onClose, userData, onFormSubmit }:
                             ) : (
                                 <input
                                     id={name}
-                                    type={type}
+                                    type={name === "email" ? "email" : "text"}
                                     placeholder={placeholder}
-                                    {...register(name, { required: `${placeholder} is required`, })}
+                                    {...register(name, {
+                                        required: `${placeholder} is required`,
+                                        ...(name === "email" ? {
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: "Invalid email address"
+                                            }
+                                        } : {})
+                                    })}
                                     className="w-full p-3 bg-gray-700 text-white rounded-md border border-gray-600 transition-all focus:outline-none focus:ring-2 focus:ring-gray-400"
                                 />
                             )}

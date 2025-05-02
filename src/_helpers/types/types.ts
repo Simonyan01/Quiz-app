@@ -9,11 +9,14 @@ export interface IUser {
   id: number
   name: string
   surname: string
+  email: string
   login: string
   password?: string
   role: Role
+  verified: boolean
   image: string | null
   achievements?: string[]
+  activationToken?: string | null
 }
 
 export interface IQuiz {
@@ -21,8 +24,8 @@ export interface IQuiz {
   title: string
   createdBy: number
   description: string
-  image: File | string | null
-  passed: boolean
+  image: string | File | null
+  passed?: boolean
   questions?: IQuestion[]
 }
 
@@ -61,7 +64,7 @@ export const METHODS = {
   DELETE: "DELETE",
 } as const
 
-export type METHODS = (typeof METHODS)[keyof typeof METHODS]
+export type METHODS = keyof typeof METHODS
 
 export interface IQuery<T> {
   data: T
@@ -74,7 +77,7 @@ export interface IQuery<T> {
 }
 
 export type Mutation<T, V = undefined> = [
-  (url: string, method: METHODS, payload?: V) => Promise<void>,
+  make: (url: string, method: METHODS, payload?: V) => Promise<void>,
   error: string,
   loading: boolean | null,
   data: T | null,

@@ -1,5 +1,4 @@
 import "@/_helpers/config/associations"
-
 import { QuestionModel } from "@/_helpers/model/entities/question"
 
 export const GET = async () => {

@@ -7,10 +7,14 @@ class User extends Model implements IUser {
   id!: number
   name!: string
   surname!: string
+  email!: string
   login!: string
   password!: string
   role!: Role
   image!: string
+  verified!: boolean
+  achievements!: string[]
+  activationToken!: string | null
 }
 
 User.init(
@@ -22,10 +26,19 @@ User.init(
     },
     name: DataTypes.STRING,
     surname: DataTypes.STRING,
-    login: {
+    email: {
       type: DataTypes.STRING,
-      unique: true,
+      validate: {
+        isEmail: true,
+      },
     },
+    verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    activationToken: DataTypes.STRING,
+    achievements: DataTypes.JSON,
+    login: DataTypes.STRING,
     password: DataTypes.STRING,
     role: {
       type: DataTypes.ENUM(...Object.values(Role)),

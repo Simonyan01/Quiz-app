@@ -1,9 +1,11 @@
 "use client"
 
 import { DeleteConfirmModal } from "@/_components/common/DeleteConfirmModal"
-import { FaEdit, FaRegSadCry, FaSpinner, FaTrashAlt } from "react-icons/fa"
 import { useHttpMutation, useHttpQuery } from "@/_helpers/hooks/useHttp"
+import { ScrollButton } from "@/_components/common/ScrollButton"
 import { EditUserForm } from "@/_components/admin/EditUserForm"
+import { UsersList } from "@/_components/user/UsersList"
+import { FaRegSadCry, FaSpinner } from "react-icons/fa"
 import { IUser, METHODS } from "@/_helpers/types/types"
 import { Layout } from "@/_components/layout/Layout"
 import { useEffect, useRef, useState } from "react"
@@ -15,9 +17,9 @@ import "@/app/(default)/global.css"
 export default function ManageUsers() {
     const router = useRouter()
     const contentRef = useRef<HTMLElement>(null)
+    const [openModal, setOpenModal] = useState(false)
     const [isEditFormOpen, setIsEditFormOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
-    const [openModal, setOpenModal] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
 
     const { data: users, loading, refetch } = useHttpQuery<IUser[]>("/api/users")
@@ -85,8 +87,8 @@ export default function ManageUsers() {
     return (
         <Layout>
             <ToastContainer />
-            <section ref={contentRef} className="container mx-auto p-6">
-                <h1 className="text-4xl font-bold text-white text-center mt-4">Manage Users</h1>
+            <section ref={contentRef} className="container min-h-screen min-w-full mx-auto p-6 bg-gray-900">
+                <h1 className="text-[40px] font-bold bg-gradient-to-br from-[#ff5330] via-[#f09819] to-[#ff5330] bg-clip-text text-transparent text-center mt-4">Manage Users</h1>
                 <div className="tracking-wide">
                     {loading || isUpdating || isDeleting ? (
                         <div className="flex justify-center items-center mt-30">
@@ -106,48 +108,11 @@ export default function ManageUsers() {
                             </button>
                         </div>
                     ) : (
-                        <table className="min-w-9/12 rounded-lg mx-auto bg-gradient-to-r from-indigo-800 via-indigo-700 to-indigo-900 border-gray-600 mt-15">
-                            <thead className="text-gray-100">
-                                <tr>
-                                    <th className="py-3 px-6 text-left">Name</th>
-                                    <th className="py-3 px-6 text-left">Surname</th>
-                                    <th className="py-3 px-6 text-left">Role</th>
-                                    <th className="py-3 px-6 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.map((user) => (
-                                    <tr
-                                        key={user.id}
-                                        className="border-t border-gray-600 hover:bg-indigo-900 transition-all duration-300"
-                                    >
-                                        <td className="py-3 px-6 text-gray-200">{user.name}</td>
-                                        <td className="py-3 px-6 text-gray-200">{user.surname}</td>
-                                        <td className={`py-3 px-6 font-semibold ${user.role === "admin" ? "text-red-400" : "text-blue-400"}`}>
-                                            {user.role}
-                                        </td>
-                                        <td className="py-3 px-6 flex gap-4 items-center justify-start">
-                                            <button
-                                                type="button"
-                                                title="Edit User"
-                                                onClick={() => handleEdit(user.id)}
-                                                className="text-yellow-400 hover:text-yellow-500 cursor-pointer transition-colors duration-200 transform hover:scale-110 hover:rounded-lg"
-                                            >
-                                                <FaEdit size={22} />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                title="Delete User"
-                                                onClick={() => handleDeleteClick(user.id)}
-                                                className="text-red-400 hover:text-red-500 cursor-pointer transition-colors duration-200 transform hover:scale-110 hover:rounded-lg"
-                                            >
-                                                <FaTrashAlt size={20} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <UsersList
+                            users={users}
+                            onEdit={handleEdit}
+                            onDelete={handleDeleteClick}
+                        />
                     )}
                 </div>
             </section>
@@ -167,6 +132,7 @@ export default function ManageUsers() {
                 title="Confirm User Deletion"
                 message="Are you sure you want to delete this user? This action cannot be undone."
             />
+            <ScrollButton />
         </Layout>
     )
 }

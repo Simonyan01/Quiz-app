@@ -1,19 +1,20 @@
 "use client"
 
-import type { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
+import { CodeEditor } from "@/_components/UI/CodeEditor"
 import { IQuiz } from "@/_helpers/types/types"
-import { CodeEditor } from "../UI/CodeEditor"
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form"
+
 
 interface QuestionBlockProps {
     idx: number
     field: any
+    fieldsLength: number
     watch: UseFormWatch<IQuiz>
-    register: UseFormRegister<IQuiz>
-    setValue: UseFormSetValue<IQuiz>
-    questions: any[]
+    errors: FieldErrors<IQuiz>
     append: (val: any) => void
     remove: (idx: number) => void
-    fieldsLength: number
+    register: UseFormRegister<IQuiz>
+    setValue: UseFormSetValue<IQuiz>
 }
 
 export const scrollToEnd = () => {
@@ -23,7 +24,9 @@ export const scrollToEnd = () => {
     })
 }
 
-export const QuestionBlock = ({ idx, field, watch, register, setValue, questions, append, remove, fieldsLength }: QuestionBlockProps) => {
+export const QuestionList = ({ idx, field, watch, register, setValue, errors, append, remove, fieldsLength }: QuestionBlockProps) => {
+    const questionErrors = errors?.questions?.[idx]
+
     const handleDublicate = () => {
         append({ ...watch(`questions.${idx}`) })
         setTimeout(scrollToEnd, 300)
@@ -39,23 +42,23 @@ export const QuestionBlock = ({ idx, field, watch, register, setValue, questions
                 value={watch(`questions.${idx}.question`)}
                 onChange={(val) => setValue(`questions.${idx}.question`, val)}
             />
-            {questions[idx]?.question && (
-                <p className="text-red-500 pt-2">{questions[idx].question?.message}</p>
+            {questionErrors?.question && (
+                <p className="text-red-500 pt-2">{questionErrors.question.message}</p>
             )}
             <div className="mt-2">
                 <label className="block mb-1">
                     Answers <span className="text-red-500">*</span>
                 </label>
                 <div>
-                    {questions[idx]?.answers && questions[idx].answers.length !== 0 && (
-                        <p className="text-red-500 pt-2">Answers are required for this question.</p>
+                    {questionErrors?.answers && questionErrors.answers.length !== 0 && (
+                        <p className="text-red-500">Answers are required for this question.</p>
                     )}
                 </div>
                 {field.answers.map((_: any, answerIdx: number) => (
                     <div key={answerIdx}>
                         <input
                             {...register(`questions.${idx}.answers.${answerIdx}` as const, {
-                                required: true
+                                required: "Answers are required for this question."
                             })}
                             className="w-full p-2 rounded bg-gray-700 border transition-all border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-[5px]"
                             placeholder={`Answer ${answerIdx + 1}`}
@@ -74,8 +77,8 @@ export const QuestionBlock = ({ idx, field, watch, register, setValue, questions
                     className="w-full p-2 rounded bg-gray-700 border transition-all border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter correct answer"
                 />
-                {questions[idx]?.correctAnswer && (
-                    <p className="text-red-500 pt-2">{questions[idx].correctAnswer?.message}</p>
+                {questionErrors?.correctAnswer && (
+                    <p className="text-red-500 pt-2">{questionErrors.correctAnswer.message}</p>
                 )}
             </div>
             <div className="flex gap-4 items-center mt-3">

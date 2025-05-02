@@ -4,8 +4,10 @@ const JWT_SECRET = process.env.JWT_SECRET!
 const REFRESH_SECRET = process.env.REFRESH_SECRET!
 
 export const generateTokens = (payload: object) => {
-  const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" })
-  const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" })
+  const { exp, ...cleanedPayload } = payload as any
+
+  const accessToken = jwt.sign(cleanedPayload, JWT_SECRET, { expiresIn: "1d" })
+  const refreshToken = jwt.sign(cleanedPayload, REFRESH_SECRET, { expiresIn: "7d" })
 
   return { accessToken, refreshToken }
 }

@@ -1,26 +1,23 @@
 import "@/_helpers/config/associations"
 
 import { UserModel } from "@/_helpers/model/entities/user"
+import { getUserId } from "@/_helpers/utils/getUserId"
 import { syncDatabase } from "@/_helpers/model/sync"
 import { NextRequest } from "next/server"
-import jwt from "jsonwebtoken"
 
 export const GET = async (req: NextRequest) => {
   try {
-    const token = req.cookies.get("_token")?.value
+    const userId = getUserId(req)
 
-    if (!token) {
-      return Response.json({ message: "Unauthorized: No token found" }, { status: 401 })
+    if (!userId) {
+      return Response.json({ message: "Unauthorized user" }, { status: 401 })
     }
 
-    const key = process.env.JWT_SECRET
-
-    if (!key) {
-      return Response.json({ message: "Server error: missing secret key" }, { status: 500 })
+    if (typeof userId !== "number") {
+      return Response.json({ message: "Invalid user ID" }, { status: 400 })
     }
 
-    const decoded = jwt.verify(token, key) as { id: number }
-    const user = await UserModel.findByPk(decoded.id, {
+    const user = await UserModel.findByPk(userId, {
       attributes: ["id", "name", "surname", "role", "image"],
     })
 

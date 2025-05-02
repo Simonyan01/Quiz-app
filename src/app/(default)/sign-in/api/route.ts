@@ -1,54 +1,57 @@
 import "@/_helpers/config/associations"
 
 import { UserModel } from "@/_helpers/model/entities/user"
-import { IUser } from "@/_helpers/types/types"
+import { generateTokens } from "@/_helpers/utils/jwt"
 import { NextRequest } from "next/server"
 import { cookies } from "next/headers"
-import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { login, password } = (await req.json()) as IUser
+    const { email, password } = await req.json()
 
-    if (!login.trim() || !password!.trim()) {
+    if (!email.trim() || !password?.trim()) {
       return Response.json({ message: "Missing credentials!" }, { status: 400 })
     }
 
-    const user = await UserModel.findOne({ where: { login } })
-    const key = process.env.JWT_SECRET
+    const user = await UserModel.findOne({ where: { email } })
+    const match = await bcrypt.compare(password, user!.password)
 
-    if (!user || !(await bcrypt.compare(password!, user.password))) {
-      return Response.json({ message: "Incorrect login details!" }, { status: 400 })
+    if (!user || !match) {
+      return Response.json({ message: "Incorrect auth credentials!" }, { status: 400 })
     }
 
-    if (!key) {
-      console.error("Secret key isn't set!")
-      return Response.json({ message: "Server error" }, { status: 500 })
+    if (!user.verified) {
+      return Response.json({ message: "Please verify your email before proceeding!" }, { status: 403 })
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        name: user.name,
-        surname: user.surname,
-        role: user.role,
-      },
-      key,
-      { expiresIn: "2d" },
-    )
+    const payload = {
+      id: user.id,
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      role: user.role,
+    }
+
+    const { accessToken, refreshToken } = generateTokens(payload)
 
     const cookieStore = await cookies()
-    cookieStore.set("_token", token, {
+    cookieStore.set("_token", accessToken, {
       httpOnly: true,
-      maxAge: 60 * 60 * 24 * 2,
+      maxAge: 60 * 60 * 24,
+    })
+
+    cookieStore.set("_refresh", refreshToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7,
     })
 
     const userWithoutPwd = user.toJSON()
     delete userWithoutPwd.password
 
     return Response.json({ message: "OK", user: userWithoutPwd })
-  } catch {
+  } catch (err) {
+    console.error(err)
     return Response.json({ message: "Server error" }, { status: 500 })
   }
 }

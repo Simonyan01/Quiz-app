@@ -8,7 +8,7 @@ export const useSearchUser = () => {
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(false)
   const [filteredUsers, setFilteredUsers] = useState<IUser[]>([])
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [_, setErrorMessage] = useState<string | null>(null)
   const debouncedSearch = useDebounce(search, 600)
 
   useEffect(() => {
@@ -54,7 +54,6 @@ export const useSearchUser = () => {
     handleInputChange,
     filteredUsers,
     loading,
-    setSearch,
     debouncedSearch,
   }
 }

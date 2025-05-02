@@ -18,6 +18,7 @@ QuizModel.belongsTo(UserModel, {
 QuizModel.hasMany(QuestionModel, {
   foreignKey: "quizId",
   as: "questions",
+  onDelete: "CASCADE",
 })
 
 QuestionModel.belongsTo(QuizModel, {
@@ -47,4 +48,5 @@ QuizModel.hasMany(QuizResultModel, {
 QuizResultModel.belongsTo(QuizModel, {
   foreignKey: "quizId",
   as: "quiz",
+  onDelete: "CASCADE",
 })

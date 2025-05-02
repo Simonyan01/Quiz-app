@@ -2,41 +2,40 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
 export async function middleware(req: NextRequest) {
+  const token = req.cookies.get("_token")?.value
   const { pathname } = req.nextUrl
 
   if (pathname.startsWith("/api")) {
     return NextResponse.next()
   }
 
-  const token = req.cookies.get("_token")?.value
-
-  if (!token) {
-    return NextResponse.redirect(new URL("/sign-in", req.url))
-  }
-
   try {
-    const verify = await fetch(new URL("/api/auth", req.url), {
-      method: "GET",
-      headers: {
-        Cookie: `_token=${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .catch((err) => {
-        throw new Error(`Verification failed:${err}`)
+    if (token) {
+      const res = await fetch(new URL("/api/auth", req.url), {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Cookie: `_token=${token}`,
+        },
       })
+      const data = await res.json()
+      const isAdmin = data.role === "admin"
+      const isUser = data.role === "user"
 
-    if (verify.role === "user" && !pathname.startsWith("/user")) {
-      return NextResponse.redirect(new URL("/user", req.url))
-    } else if (verify.role === "admin" && !pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/admin", req.url))
-    } else if (!verify.role) {
-      return NextResponse.redirect(new URL("/sign-in", req.url))
+      if (isUser && !pathname.startsWith("/user")) {
+        return NextResponse.redirect(new URL("/user", req.url))
+      }
+
+      if (isAdmin && !pathname.startsWith("/admin")) {
+        return NextResponse.redirect(new URL("/admin", req.url))
+      }
+
+      return NextResponse.next()
     }
   } catch (err) {
     const errRes = err as Error
 
-    if (errRes.name === "TokenExpiredError" || errRes.message === "Invalid token") {
+    if (errRes.message === "Invalid token") {
       return NextResponse.redirect(new URL("/sign-in", req.url))
     }
   }

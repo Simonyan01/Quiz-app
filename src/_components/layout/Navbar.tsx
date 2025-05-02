@@ -3,45 +3,47 @@
 import { useSearchUser } from "@/_helpers/hooks/useSearchUser"
 import { useHttpQuery } from "@/_helpers/hooks/useHttp"
 import { CircularProgress, Grow } from "@mui/material"
+import { useEffect, useRef, useState } from "react"
 import { IUser } from "@/_helpers/types/types"
 import { FaUserCircle } from "react-icons/fa"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
+
+const roleRoutes: Record<string, string> = {
+    admin: "/admin",
+    user: "/user",
+    guest: "/sign-in",
+}
 
 export const Navbar = () => {
     const router = useRouter()
     const inputRef = useRef<HTMLInputElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false)
 
     const { data } = useHttpQuery<IUser>("/api/auth")
-    const { search, setSearch, handleInputChange, filteredUsers, loading, debouncedSearch } = useSearchUser()
+    const { search, handleInputChange, filteredUsers, loading, debouncedSearch } = useSearchUser()
+
     const open = !!debouncedSearch
+    const role = data?.role || "guest"
+    const href = roleRoutes[role] || "/sign-in"
 
     const handleRedirect = (user: IUser) => {
-        router.push(`/admin/users/${user.id}`)
+        router.push(`/profile/${user.id}`)
     }
 
-    const handleHomeClick = () => {
-        const routes = {
-            admin: "/admin",
-            user: "/user",
-            guest: "/sign-in",
+    const handleClickOutside = (evt: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(evt.target as Node) && !inputRef.current?.contains(evt.target as Node)) {
+            setIsDropdownVisible(false)
+        } else {
+            setIsDropdownVisible(true)
         }
-
-        router.push(routes[data?.role])
     }
 
     useEffect(() => {
-        const handleClickOutside = (evt: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(evt.target as Node)) {
-                setSearch("")
-            }
-        }
-
-        addEventListener("mousedown", handleClickOutside)
-        return () => removeEventListener("mousedown", handleClickOutside)
+        window.addEventListener("mousedown", handleClickOutside)
+        return () => window.removeEventListener("mousedown", handleClickOutside)
     }, [])
     return (
         <nav className="bg-gray-900 sticky top-0 z-20 bg-opacity-80 backdrop-blur-lg shadow-lg w-full p-2">
@@ -56,7 +58,7 @@ export const Navbar = () => {
                         alt="Quiz Icon"
                         width={300}
                         height={200}
-                        className="w-10"
+                        className="w-12"
                         draggable={false}
                         priority
                     />
@@ -65,18 +67,19 @@ export const Navbar = () => {
                         App
                     </span>
                 </Link>
-                <div className="flex justify-center items-center gap-4 w-full max-w-md relative">
+                <div className="flex justify-center items-center gap-4 w-full max-w-sm max-md:justify-end">
                     <input
                         type="text"
-                        placeholder="Search users by name, surname or role..."
-                        value={search}
                         ref={inputRef}
+                        value={search}
                         onChange={handleInputChange}
-                        className="w-full sm:w-[18rem] md:w-[25rem] lg:w-sm px-4 py-2 rounded-md placeholder:tracking-wide bg-gray-800 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 text-sm sm:text-base"
+                        title="Search users by name, surname or role..."
+                        placeholder="Search users by name, surname or role..."
+                        className="w-full sm:w-[18rem] md:w-[25rem] px-4 py-2 max-md:hidden rounded-md placeholder:tracking-wide bg-gray-800 text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 text-sm sm:text-base"
                     />
-                    {open && (
+                    {open && isDropdownVisible && (
                         <Grow in={!!filteredUsers?.length || loading || (!loading && filteredUsers.length === 0)} timeout={500}>
-                            <div ref={dropdownRef} className="absolute top-[110%] left-0 w-xs bg-gray-800 text-gray-200 rounded-md border border-gray-700 overflow-hidden shadow-md z-10">
+                            <div ref={dropdownRef} className="absolute top-[110%] right-23 w-xs bg-gray-800 text-gray-200 rounded-md border border-gray-700 overflow-hidden shadow-md z-10">
                                 {loading ? (
                                     <div className="p-3 text-center italic text-sm text-gray-400">
                                         <svg width={0} height={0}>
@@ -117,14 +120,12 @@ export const Navbar = () => {
                             </div>
                         </Grow>
                     )}
-                    <ul>
-                        <li
-                            onClick={handleHomeClick}
-                            className="px-2 py-2 my-2 bg-gray-800 rounded-md hover:scale-110 cursor-pointer flex gap-5 items-center transition-all duration-400"
-                        >
-                            <FaUserCircle size={30} />
-                        </li>
-                    </ul>
+                    <Link
+                        href={href}
+                        className="px-2 py-2 my-2 bg-gray-800 rounded-md hover:scale-110 cursor-pointer flex gap-5 items-center transition-all duration-400"
+                    >
+                        <FaUserCircle size={30} />
+                    </Link>
                 </div>
             </div>
         </nav>

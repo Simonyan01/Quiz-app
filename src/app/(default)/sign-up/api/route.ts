@@ -1,12 +1,13 @@
 import "@/_helpers/config/associations"
 
+import { sendActivationEmail } from "@/_helpers/lib/activationEmail"
 import { UserModel } from "@/_helpers/model/entities/user"
-import { IUser } from "@/_helpers/types/types"
+import { activationToken } from "@/_helpers/constants"
 import bcrypt from "bcrypt"
 
 export const POST = async (req: Request) => {
   try {
-    const { login, password, ...rest } = (await req.json()) as IUser
+    const { name, surname, login, email, password } = await req.json()
 
     const loginRegExp = /^[a-zA-Z0-9_.]{3,20}$/
     const pwdRegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
@@ -36,17 +37,20 @@ export const POST = async (req: Request) => {
       )
     }
 
-    const found = await UserModel.findOne({
-      where: { login },
-      attributes: { exclude: ["password"] },
-    })
-
-    if (found) {
+    const existingLogin = await UserModel.findOne({ where: { login } })
+    if (existingLogin) {
       return Response.json({ message: "Username is already in use" }, { status: 400 })
     }
 
+    const existingEmail = await UserModel.findOne({ where: { email } })
+    if (existingEmail) {
+      return Response.json({ message: "Email is already in use" }, { status: 400 })
+    }
+
     const hashedPwd = await bcrypt.hash(password!, 10)
-    const newUser = await UserModel.create({ login, password: hashedPwd, ...rest })
+    const newUser = await UserModel.create({ name, surname, login, email, password: hashedPwd, activationToken })
+
+    await sendActivationEmail(email, name, surname)
 
     return Response.json({ message: "User successfully created", user: newUser }, { status: 201 })
   } catch {
